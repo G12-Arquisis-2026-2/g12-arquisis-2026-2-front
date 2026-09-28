@@ -1,0 +1,18 @@
+.connectivity-table {
+  margin-top: 1rem;
+}
+
+.connectivity-table th {
+  border-bottom: 2px solid var(--jp-ink-black);
+}
+
+.badge-enabled {
+  background-color: #1c1917;
+  color: #f5eee3;
+}
+
+.badge-disabled {
+  background-color: transparent;
+  border: 1px solid var(--jp-red-accent);
+  color: var(--jp-red-accent);
+}

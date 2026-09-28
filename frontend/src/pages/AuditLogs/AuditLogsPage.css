@@ -1,0 +1,38 @@
+/* src/pages/AuditLogsPage.css */
+.audit-section {
+  margin-bottom: 3rem;
+}
+
+.audit-section-title-dup {
+  font-family: 'Zen Old Mincho', serif;
+  color: var(--jp-ink-black);
+  font-size: 1.25rem;
+  font-weight: 900;
+  margin-bottom: 0.25rem;
+}
+
+.audit-section-title-rej {
+  font-family: 'Zen Old Mincho', serif;
+  color: var(--jp-red-accent);
+  font-size: 1.25rem;
+  font-weight: 900;
+  margin-bottom: 0.25rem;
+}
+
+.table-duplicates th,
+.table-rejected th {
+  border-bottom: 2px solid var(--jp-ink-black);
+}
+
+.table-duplicates tbody tr:hover,
+.table-rejected tbody tr:hover {
+  background-color: rgba(222, 203, 189, 0.2);
+}
+
+.action-highlight {
+  font-weight: 800;
+  color: var(--jp-ink-black);
+  background-color: #ede4d5;
+  padding: 3px 8px;
+  border-radius: 4px;
+}

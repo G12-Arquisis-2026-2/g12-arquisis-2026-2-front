@@ -1,122 +1,64 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import React from 'react';
+import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom';
+import { CyclesPage } from './pages/Cycles/CyclesPage';
+import { ConnectivityPage } from './pages/Connectivity/ConnectivityPage';
+import { ProposalsPage } from './pages/Proposals/ProposalsPage.tsx';
+import { AuditLogsPage } from './pages/AuditLogs/AuditLogsPage';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export const App: React.FC = () => {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <BrowserRouter>
+      <div className="app-container">
+        <div className="app-wrapper">
+          {/* CUADRO 1: NAVBAR INDEPENDIENTE COLOR CREMA */}
+          <header className="navbar-card">
+            <div className="brand-group">
+              <span className="brand-badge">E S</span>
+              <h1 className="app-title">EnergyShark</h1>
+            </div>
+            <nav className="nav-links">
+              <NavLink 
+                to="/cycles" 
+                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              >
+                Historial Ciclos (RF01)
+              </NavLink>
+              <NavLink 
+                to="/connectivity" 
+                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              >
+                Conectividad (RF02)
+              </NavLink>
+              <NavLink 
+                to="/proposals" 
+                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              >
+                Negociaciones (RF04)
+              </NavLink>
+              <NavLink 
+                to="/audit" 
+                className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+              >
+                Auditoría (RF05)
+              </NavLink>
+            </nav>
+          </header>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+          {/* CUADRO 2: CONTENEDOR PRINCIPAL INDEPENDIENTE COLOR CREMA */}
+          <main className="app-canvas">
+            <Routes>
+              <Route path="/" element={<Navigate to="/cycles" replace />} />
+              <Route path="/cycles" element={<CyclesPage />} />
+              <Route path="/connectivity" element={<ConnectivityPage />} />
+              <Route path="/proposals" element={<ProposalsPage />} />
+              <Route path="/audit" element={<AuditLogsPage />} />
+            </Routes>
+          </main>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      </div>
+    </BrowserRouter>
+  );
+};
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
-}
-
-export default App
+export default App;
