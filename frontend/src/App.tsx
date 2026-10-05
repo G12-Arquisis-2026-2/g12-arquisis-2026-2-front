@@ -28,7 +28,7 @@ export const App: React.FC = () => {
           <header className="navbar-card">
             <div className="brand-group">
               <span className="brand-badge">E S</span>
-              <h1 className="app-title">⚡ EnergyShark</h1>
+              <h1 className="app-title">EnergyShark</h1>
             </div>
 
             <nav className="nav-links">
