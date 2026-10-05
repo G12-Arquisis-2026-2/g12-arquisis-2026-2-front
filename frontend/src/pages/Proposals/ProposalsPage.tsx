@@ -2,21 +2,29 @@
 import React, { useEffect, useState } from 'react';
 import { ApiService } from '../../services/apiService';
 import type { VoluntaryNegotiation } from '../../types/api';
+import { ErrorMessage } from '../../components/ErrorMessage';
 import './ProposalsPage.css';
 
 export const ProposalsPage: React.FC = () => {
   const [proposals, setProposals] = useState<VoluntaryNegotiation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [cycleId, setCycleId] = useState('cycle-9431');
   const [direction, setDirection] = useState<'take' | 'give'>('take');
   const [quantity, setQuantity] = useState<number>(1000);
   const [pricePerEnergy, setPricePerEnergy] = useState<number>(210);
-  const [feedback, setFeedback] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<{ text: string; isError?: boolean } | null>(null);
 
   const fetchProposals = () => {
     setLoading(true);
+    setError(null);
     ApiService.getProposals()
       .then(setProposals)
+      .catch((err) => {
+        console.error('Error fetching proposals:', err);
+        setError('No se pudo conectar con la API para obtener el listado de negociaciones.');
+      })
       .finally(() => setLoading(false));
   };
 
@@ -24,19 +32,23 @@ export const ProposalsPage: React.FC = () => {
     fetchProposals();
   }, []);
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback(null);
 
-    const res = await ApiService.createProposal({
-      cycleId,
-      direction,
-      quantity: Number(quantity),
-      pricePerEnergy: Number(pricePerEnergy),
-    });
-
-    setFeedback(res.message);
-    fetchProposals();
+    try {
+      const res = await ApiService.createProposal({
+        cycleId,
+        direction,
+        quantity: Number(quantity),
+        pricePerEnergy: Number(pricePerEnergy),
+      });
+      setFeedback({ text: res.message, isError: false });
+      fetchProposals();
+    } catch (err: any) {
+      const msg = err.response?.data?.error || 'Error al emitir la oferta hacia la API.';
+      setFeedback({ text: msg, isError: true });
+    }
   };
 
   return (
@@ -50,7 +62,14 @@ export const ProposalsPage: React.FC = () => {
 
       <section className="proposal-form-container">
         <h3 style={{ margin: '0 0 1rem 0' }}>Nueva Propuesta</h3>
-        {feedback && <div className="feedback-message">{feedback}</div>}
+        {feedback && (
+          <div
+            className="feedback-message"
+            style={{ color: feedback.isError ? '#dc2626' : '#0284c7' }}
+          >
+            {feedback.text}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="proposal-form">
           <div className="form-group">
             <label>Cycle ID:</label>
@@ -71,8 +90,6 @@ export const ProposalsPage: React.FC = () => {
             <label>Precio Techo:</label>
             <input type="number" step="0.1" min="1" value={pricePerEnergy} onChange={(e) => setPricePerEnergy(Number(e.target.value))} required />
           </div>
-
-          {/* Contenedor centrado para el botón */}
           <div className="form-actions">
             <button type="submit" className="btn-primary">
               Enviar Oferta
@@ -82,9 +99,11 @@ export const ProposalsPage: React.FC = () => {
       </section>
 
       <h3 style={{ marginBottom: '0.5rem' }}>Historial de Negociaciones</h3>
-      {loading ? (
-        <p>Cargando ofertas...</p>
-      ) : (
+      {loading && <p>Cargando ofertas...</p>}
+
+      {error && !loading && <ErrorMessage message={error} onRetry={fetchProposals} />}
+
+      {!loading && !error && (
         <table className="data-table">
           <thead>
             <tr style={{ background: '#e2e8f0' }}>
@@ -96,21 +115,25 @@ export const ProposalsPage: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {proposals.map((prop, idx) => (
-              <tr key={prop.proposalId || idx}>
-                <td><code>{prop.proposalId || 'N/A'}</code></td>
-                <td><strong>{prop.direction.toUpperCase()}</strong></td>
-                <td>{prop.quantity.toLocaleString()} kWh</td>
-                <td>{prop.pricePerEnergy}</td>
-                <td>
-                  <span className={`status-badge ${
-                    prop.status === 'paid' ? 'badge-paid' : prop.status === 'timeout' ? 'badge-timeout' : 'badge-confirmed'
-                  }`}>
-                    {prop.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
+            {proposals.map((prop, idx) => {
+              const identifier = prop.id || prop.proposalId || `prop-${idx}`;
+
+              return (
+                <tr key={identifier}>
+                  <td><code>{identifier}</code></td>
+                  <td><strong>{prop.direction.toUpperCase()}</strong></td>
+                  <td>{prop.quantity.toLocaleString()} kWh</td>
+                  <td>{prop.pricePerEnergy}</td>
+                  <td>
+                    <span className={`status-badge ${
+                      prop.status === 'paid' ? 'badge-paid' : prop.status === 'timeout' ? 'badge-timeout' : 'badge-confirmed'
+                    }`}>
+                      {prop.status}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}

@@ -1,22 +1,28 @@
-// src/pages/CyclesPage.tsx
 import React, { useEffect, useState } from 'react';
 import { ApiService } from '../../services/apiService';
 import type { CycleSummary } from '../../types/api';
+import { ErrorMessage } from '../../components/ErrorMessage';
 import './CyclesPage.css';
 
 export const CyclesPage: React.FC = () => {
   const [cycles, setCycles] = useState<CycleSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [expandedCycleId, setExpandedCycleId] = useState<string | null>(null);
 
   const fetchCycles = () => {
     setLoading(true);
+    setError(null);
     ApiService.getCycles()
       .then((data) => {
         setCycles(data);
         if (data.length > 0 && !expandedCycleId) {
           setExpandedCycleId(data[0].cycleId);
         }
+      })
+      .catch((err) => {
+        console.error('Error fetching cycles:', err);
+        setError('No se pudo conectar con la API para obtener el historial de ciclos.');
       })
       .finally(() => setLoading(false));
   };
@@ -28,8 +34,6 @@ export const CyclesPage: React.FC = () => {
   const toggleCycle = (cycleId: string) => {
     setExpandedCycleId((prev) => (prev === cycleId ? null : cycleId));
   };
-
-  if (loading) return <div>Cargando historial de ciclos...</div>;
 
   return (
     <div>
@@ -45,9 +49,15 @@ export const CyclesPage: React.FC = () => {
         </button>
       </div>
 
-      {cycles.length === 0 ? (
+      {loading && <div>Cargando historial de ciclos...</div>}
+
+      {error && !loading && <ErrorMessage message={error} onRetry={fetchCycles} />}
+
+      {!loading && !error && cycles.length === 0 && (
         <p>No hay ciclos registrados en el ledger local.</p>
-      ) : (
+      )}
+
+      {!loading && !error && (
         cycles.map((c) => {
           const isExpanded = expandedCycleId === c.cycleId;
           const energySurplus = c.statusStatement.energy.generationCapacity - c.statusStatement.energy.consumption;
@@ -160,19 +170,19 @@ export const CyclesPage: React.FC = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {c.voluntaryNegotiations.map((neg, idx) => (
-                            <tr key={idx}>
-                              <td><code>{neg.proposalId || 'N/A'}</code></td>
-                              <td><strong>{neg.direction.toUpperCase()}</strong></td>
-                              <td>{neg.quantity.toLocaleString()} kWh</td>
-                              <td>{neg.pricePerEnergy} créditos</td>
-                              <td>
-                                <span className={`status-badge ${neg.status === 'paid' ? 'badge-paid' : 'badge-timeout'}`}>
-                                  {neg.status.toUpperCase()}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
+                        {c.voluntaryNegotiations.map((neg, idx) => (
+                          <tr key={neg.id || neg.proposalId || idx}>
+                            <td><code>{neg.id || neg.proposalId || 'N/A'}</code></td>
+                            <td><strong>{neg.direction.toUpperCase()}</strong></td>
+                            <td className="data-table-num">{neg.quantity.toLocaleString()} kWh</td>
+                            <td>{neg.pricePerEnergy} créditos</td>
+                            <td>
+                              <span className={`status-badge ${neg.status === 'paid' ? 'badge-paid' : 'badge-timeout'}`}>
+                                {neg.status.toUpperCase()}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
                         </tbody>
                       </table>
                     )}
