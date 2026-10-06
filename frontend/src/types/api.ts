@@ -17,6 +17,7 @@ export interface DemandStatementRecord {
   }
   
 export interface VoluntaryNegotiation {
+    id?: string;
     proposalId?: string;
     direction: 'take' | 'give';
     quantity: number;
