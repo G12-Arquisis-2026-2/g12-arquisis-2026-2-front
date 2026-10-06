@@ -16,7 +16,10 @@ export const App: React.FC = () => {
   // Conectar el interceptor de Axios con Auth0 al montar
   useEffect(() => {
     if (isAuthenticated) {
-      setupAxiosInterceptors(getAccessTokenSilently);
+      setupAxiosInterceptors(async () => {
+        const token = await getAccessTokenSilently();
+        return token ?? '';
+      });
     }
   }, [isAuthenticated, getAccessTokenSilently]);
 

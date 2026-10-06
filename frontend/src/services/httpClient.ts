@@ -8,17 +8,17 @@ export const apiClient = axios.create({
 });
 
 export const setupAxiosInterceptors = (
-  getAccessTokenSilently: () => Promise<string>
+  getAccessTokenFn: () => Promise<string>
 ) => {
   apiClient.interceptors.request.use(
     async (config) => {
       try {
-        const token = await getAccessTokenSilently();
+        const token = await getAccessTokenFn();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
       } catch {
-        // Petición continúa sin token si el usuario no ha iniciado sesión
+        // Continúa sin token si ocurre un error
       }
       return config;
     },
