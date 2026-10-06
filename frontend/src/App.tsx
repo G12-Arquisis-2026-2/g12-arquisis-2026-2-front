@@ -1,5 +1,4 @@
-// src/App.tsx
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { CyclesPage } from './pages/Cycles/CyclesPage';
@@ -7,21 +6,11 @@ import { ConnectivityPage } from './pages/Connectivity/ConnectivityPage';
 import { ProposalsPage } from './pages//Proposals/ProposalsPage';
 import { AuditLogsPage } from './pages/AuditLogs/AuditLogsPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
-import { setupAxiosInterceptors } from './services/httpClient';
+import { AxiosAuthBridge } from './components/AxiosAuthBridge';
 import './App.css';
 
 export const App: React.FC = () => {
-  const { loginWithRedirect, logout, user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
-
-  // Conectar el interceptor de Axios con Auth0 al montar
-  useEffect(() => {
-    if (isAuthenticated) {
-      setupAxiosInterceptors(async () => {
-        const token = await getAccessTokenSilently();
-        return token ?? '';
-      });
-    }
-  }, [isAuthenticated, getAccessTokenSilently]);
+  const { loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0();
 
   return (
     <BrowserRouter>
@@ -78,15 +67,17 @@ export const App: React.FC = () => {
             </div>
           </header>
 
-          {/* RUTAS PROTEGIDAS */}
+          {/* CONTENEDOR PRINCIPAL CON PROTECCIÓN DE RENDERIZACIÓN */}
           <main className="app-canvas">
-            <Routes>
-              <Route path="/" element={<Navigate to="/cycles" replace />} />
-              <Route path="/cycles" element={<ProtectedRoute component={CyclesPage} />} />
-              <Route path="/connectivity" element={<ProtectedRoute component={ConnectivityPage} />} />
-              <Route path="/proposals" element={<ProtectedRoute component={ProposalsPage} />} />
-              <Route path="/audit" element={<ProtectedRoute component={AuditLogsPage} />} />
-            </Routes>
+            <AxiosAuthBridge>
+              <Routes>
+                <Route path="/" element={<Navigate to="/cycles" replace />} />
+                <Route path="/cycles" element={<ProtectedRoute component={CyclesPage} />} />
+                <Route path="/connectivity" element={<ProtectedRoute component={ConnectivityPage} />} />
+                <Route path="/proposals" element={<ProtectedRoute component={ProposalsPage} />} />
+                <Route path="/audit" element={<ProtectedRoute component={AuditLogsPage} />} />
+              </Routes>
+            </AxiosAuthBridge>
           </main>
         </div>
       </div>
