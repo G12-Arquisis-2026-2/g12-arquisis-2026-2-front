@@ -14,6 +14,16 @@ export const ApiService = {
     return res.data.cycles;
   },
 
+  async getCurrentCycle(): Promise<CycleSummary> {
+    const res = await apiClient.get<{ cycle: CycleSummary }>('/cycles/current');
+    return res.data.cycle;
+  },
+
+  async getCycleById(id: string): Promise<CycleSummary> {
+    const res = await apiClient.get<{ cycle: CycleSummary }>(`/cycles/${id}`);
+    return res.data.cycle;
+  },
+
   // RF02: Tabla de distancias y conectividad
   async getConnectivity(): Promise<ConnectivityResponse> {
     const res = await apiClient.get<ConnectivityResponse>('/connectivity');

@@ -32,7 +32,7 @@ export const ProposalsPage: React.FC = () => {
     fetchProposals();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setFeedback(null);
 
@@ -46,7 +46,10 @@ export const ProposalsPage: React.FC = () => {
       setFeedback({ text: res.message, isError: false });
       fetchProposals();
     } catch (err: any) {
-      const msg = err.response?.data?.error || 'Error al emitir la oferta hacia la API.';
+      const errorData = err.response?.data?.error;
+      const msg = Array.isArray(errorData)
+        ? errorData.join(', ')
+        : errorData || 'Error al emitir la oferta hacia la API.';
       setFeedback({ text: msg, isError: true });
     }
   };
@@ -116,17 +119,22 @@ export const ProposalsPage: React.FC = () => {
           </thead>
           <tbody>
             {proposals.map((prop, idx) => {
-              const identifier = prop.id || prop.proposalId || `prop-${idx}`;
+              const identifier = prop.idpk || prop.id || prop.proposalId || `prop-${idx}`;
+              const price = prop.price_per_energy ?? prop.pricePerEnergy ?? '-';
 
               return (
                 <tr key={identifier}>
-                  <td><code>{identifier}</code></td>
-                  <td><strong>{prop.direction.toUpperCase()}</strong></td>
-                  <td>{prop.quantity.toLocaleString()} kWh</td>
-                  <td>{prop.pricePerEnergy}</td>
+                  <td><code>{String(identifier).slice(0, 8)}...</code></td>
+                  <td><strong>{prop.direction?.toUpperCase()}</strong></td>
+                  <td>{prop.quantity?.toLocaleString()} kWh</td>
+                  <td>{price} créditos</td>
                   <td>
                     <span className={`status-badge ${
-                      prop.status === 'paid' ? 'badge-paid' : prop.status === 'timeout' ? 'badge-timeout' : 'badge-confirmed'
+                      prop.status?.toLowerCase() === 'paid'
+                        ? 'badge-paid'
+                        : prop.status?.toLowerCase() === 'timeout'
+                        ? 'badge-timeout'
+                        : 'badge-confirmed'
                     }`}>
                       {prop.status}
                     </span>

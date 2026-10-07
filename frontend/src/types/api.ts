@@ -14,15 +14,20 @@ export interface DemandStatementRecord {
     quantity: number;
     valuePerKwh: number;
     appliedAt: string;
-  }
+}
   
 export interface VoluntaryNegotiation {
-    id?: string;
+    id?: number | string;
+    idpk?: string;
     proposalId?: string;
+    cycleId?: string;
+    cycle_id?: string;
     direction: 'take' | 'give';
     quantity: number;
-    pricePerEnergy: number;
-    status: 'pending' | 'confirmed' | 'paid' | 'timeout';
+    price_per_energy?: number;
+    pricePerEnergy?: number;
+    status: string;
+    created_at?: string;
     createdAt?: string;
 }
   

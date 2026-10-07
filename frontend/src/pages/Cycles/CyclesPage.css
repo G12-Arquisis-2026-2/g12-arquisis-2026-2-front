@@ -146,3 +146,65 @@
   font-weight: 900;
   color: var(--jp-red-accent);
 }
+
+/* --- Tarjeta destacada del ciclo actual (GET /cycles/current) --- */
+.current-cycle-highlight {
+  border: 2px solid var(--jp-ink-black);
+  margin-bottom: 2rem;
+  background-color: var(--jp-canvas-cream);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.current-cycle-header {
+  padding: 1rem 1.75rem;
+  background-color: var(--jp-card-bg);
+  border-bottom: 1.5px solid var(--jp-border-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.current-cycle-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.current-cycle-badge {
+  background-color: var(--jp-red-accent);
+  color: #ffffff;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.current-cycle-id {
+  font-family: 'Zen Old Mincho', serif;
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--jp-ink-black);
+}
+
+.current-cycle-timer {
+  font-size: 0.82rem;
+  color: var(--jp-ink-muted);
+  font-weight: 600;
+}
+
+.current-cycle-stats {
+  padding: 1.25rem 1.75rem;
+  display: flex;
+  gap: 2.5rem;
+  font-size: 0.9rem;
+  color: var(--jp-ink-black);
+  flex-wrap: wrap;
+}
+
+.current-cycle-stats span {
+  color: var(--jp-red-accent);
+  font-weight: 700;
+}
