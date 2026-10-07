@@ -33,7 +33,7 @@ export const ConnectivityPage: React.FC = () => {
           <h2 className="page-title">Conectividad y Rutas de Transmisión (RF02)</h2>
           {data && (
             <p className="page-subtitle">
-              <strong>Nodo Ciudad:</strong> {data.cityId} | <strong>Última actualización:</strong> {new Date(data.updatedAt).toLocaleString()}
+              <strong>Nodo Ciudad:</strong> {data.cityId} | <strong>Última actualización:</strong> {data.updatedAt ? new Date(data.updatedAt).toLocaleString() : 'Sin datos'}
             </p>
           )}
         </div>

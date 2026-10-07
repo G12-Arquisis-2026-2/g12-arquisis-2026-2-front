@@ -10,10 +10,10 @@ export const ProposalsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [cycleId, setCycleId] = useState('cycle-9431');
+  const [cycleId, setCycleId] = useState('');
   const [direction, setDirection] = useState<'take' | 'give'>('take');
-  const [quantity, setQuantity] = useState<number>(1000);
-  const [pricePerEnergy, setPricePerEnergy] = useState<number>(210);
+  const [quantity, setQuantity] = useState('');
+  const [pricePerEnergy, setPricePerEnergy] = useState('');
   const [feedback, setFeedback] = useState<{ text: string; isError?: boolean } | null>(null);
 
   const fetchProposals = () => {
@@ -30,6 +30,11 @@ export const ProposalsPage: React.FC = () => {
 
   useEffect(() => {
     fetchProposals();
+    ApiService.getCurrentCycle()
+      .then((cycle) => {
+        if (cycle?.cycleId) setCycleId((prev) => prev || cycle.cycleId);
+      })
+      .catch((err) => console.error('Error fetching current cycle:', err));
   }, []);
 
   const handleSubmit = async (e: React.SubmitEvent) => {
@@ -87,11 +92,11 @@ export const ProposalsPage: React.FC = () => {
           </div>
           <div className="form-group">
             <label>Cantidad (kWh):</label>
-            <input type="number" min="1" value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} required />
+            <input type="number" min="1" value={quantity} onChange={(e) => setQuantity(e.target.value)} required />
           </div>
           <div className="form-group">
             <label>Precio Techo:</label>
-            <input type="number" step="0.1" min="1" value={pricePerEnergy} onChange={(e) => setPricePerEnergy(Number(e.target.value))} required />
+            <input type="number" step="0.1" min="1" value={pricePerEnergy} onChange={(e) => setPricePerEnergy(e.target.value)} required />
           </div>
           <div className="form-actions">
             <button type="submit" className="btn-primary">
