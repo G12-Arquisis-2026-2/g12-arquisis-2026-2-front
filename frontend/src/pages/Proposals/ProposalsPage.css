@@ -1,6 +1,7 @@
+
 .proposal-form-container {
   background-color: #f7f1e7;
-  border: 1.5px solid var(--jp-border-soft);
+  border: 1.5px solid var(--jp-border-soft, #d1d5db);
   padding: 1.75rem;
   border-radius: 12px;
   margin-bottom: 2.5rem;
@@ -11,7 +12,7 @@
   font-family: 'Zen Old Mincho', serif;
   font-size: 1.15rem;
   font-weight: 900;
-  color: var(--jp-ink-black);
+  color: var(--jp-ink-black, #1c1917);
 }
 
 .proposal-form {
@@ -20,7 +21,38 @@
   gap: 1.25rem;
 }
 
-/* Ocupa todo el ancho inferior y centra el botón */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  color: var(--jp-ink-muted, #57534e);
+  margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px 12px;
+  border: 1.5px solid var(--jp-border-soft, #cbd5e1);
+  border-radius: 6px;
+  background-color: #ffffff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--jp-ink-black, #1c1917);
+}
+
+.form-group input:read-only,
+.form-group input:disabled {
+  background-color: #e5e7eb;
+  color: #4b5563;
+  cursor: not-allowed;
+}
+
 .form-actions {
   grid-column: 1 / -1;
   display: flex;
@@ -34,57 +66,63 @@
   height: 42px;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label {
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-weight: 700;
-  color: var(--jp-ink-muted);
-  margin-bottom: 6px;
-}
-
-.form-group input,
-.form-group select {
-  padding: 10px 12px;
-  border: 1.5px solid var(--jp-border-soft);
-  border-radius: 6px;
-  background-color: #ffffff;
-  font-family: inherit;
-  font-size: 0.9rem;
-  color: var(--jp-ink-black);
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: var(--jp-red-accent);
-}
-
 .feedback-message {
-  color: var(--jp-red-accent);
   font-weight: 700;
   margin-bottom: 1rem;
   font-size: 0.9rem;
 }
 
-/* Insignias de estado tipo sello */
+/* --- Badges de estados con colores distintivos (sin timeout) --- */
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Pagada / Exitosa */
 .badge-paid {
-  background-color: #1c1917;
-  color: #ffffff;
+  background-color: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
 }
 
-.badge-timeout {
-  background-color: var(--jp-red-accent);
-  color: #ffffff;
-}
-
+/* Confirmada / En curso */
 .badge-confirmed {
-  background-color: transparent;
-  border: 1px solid var(--jp-ink-black);
-  color: var(--jp-ink-black);
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #7dd3fc;
+}
+
+/* Pendiente de respuesta */
+.badge-pending {
+  background-color: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fde047;
+}
+
+/* Rechazada / Fallida / Expirada */
+.badge-rejected,
+.badge-failed {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+/* Fallback default */
+.badge-default {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.status-reason-text {
+  display: block;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 4px;
+  font-style: italic;
 }

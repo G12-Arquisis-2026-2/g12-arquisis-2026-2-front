@@ -17,7 +17,7 @@ export interface DemandStatementRecord {
 }
   
 export interface VoluntaryNegotiation {
-    id?: number | string;
+    id?: string | number;
     idpk?: string;
     proposalId?: string;
     cycleId?: string;
@@ -26,10 +26,12 @@ export interface VoluntaryNegotiation {
     quantity: number;
     price_per_energy?: number;
     pricePerEnergy?: number;
+    generation_cost?: number;
     status: string;
+    status_reason?: string | null;
     created_at?: string;
     createdAt?: string;
-}
+  }
   
 export interface NegotiationReport {
     budgetBalance: number;

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ApiService } from '../../services/apiService';
 import type { CycleSummary } from '../../types/api';
 import { ErrorMessage } from '../../components/ErrorMessage';
+import { ErrorBoundary } from '../../components/ErrorBoundary';
 import './CyclesPage.css';
 
 export const CyclesPage: React.FC = () => {
@@ -120,162 +121,186 @@ export const CyclesPage: React.FC = () => {
           const energySurplus = activeData.statusStatement.energy.generationCapacity - activeData.statusStatement.energy.consumption;
 
           return (
-            <div key={c.cycleId} className="cycle-card">
-              <div
-                className={`cycle-header ${isExpanded ? 'expanded' : ''}`}
-                onClick={() => toggleCycle(c.cycleId)}
-              >
-                <div>
-                  <span className="cycle-id">Ciclo: {c.cycleId}</span>
-                  <span className="badge-operation">Última Op: {c.lastOperation}</span>
-                </div>
-
-                <div className="cycle-header-summary">
+            <ErrorBoundary key={c.cycleId} fallbackMessage={`Error al renderizar los datos del ciclo ${c.cycleId}`}>
+              <div key={c.cycleId} className="cycle-card">
+                <div
+                  className={`cycle-header ${isExpanded ? 'expanded' : ''}`}
+                  onClick={() => toggleCycle(c.cycleId)}
+                >
                   <div>
-                    <div className="summary-label">Balance Final (Energía / Budget)</div>
-                    <div className="summary-values">
-                      {c.finalBalances.energy.toLocaleString()} kWh | {c.finalBalances.budget.toLocaleString()} créditos
-                    </div>
+                    <span className="cycle-id">Ciclo: {c.cycleId}</span>
+                    <span className="badge-operation">Última Op: {c.lastOperation}</span>
                   </div>
-                  <span className="accordion-arrow">{isExpanded ? '▲' : '▼'}</span>
+
+                  <div className="cycle-header-summary">
+                    <div>
+                      <div className="summary-label">Balance Final (Energía / Budget)</div>
+                      <div className="summary-values">
+                        {c.finalBalances.energy.toLocaleString()} kWh | {c.finalBalances.budget.toLocaleString()} créditos
+                      </div>
+                    </div>
+                    <span className="accordion-arrow">{isExpanded ? '▲' : '▼'}</span>
+                  </div>
                 </div>
-              </div>
 
-              {isExpanded && (
-                <div className="cycle-details">
-                  {loadingDetail && !selectedCycleDetails[c.cycleId] ? (
-                    <div>Cargando detalle del ciclo...</div>
-                  ) : (
-                    <>
-                      {/* 1. Status Statement & 2. Transfer */}
-                      <div className="info-cards-grid">
-                        <div className="info-card">
-                          <h4 className="info-card-title">1. Estado Inicial (status-statement)</h4>
-                          <p className="info-card-row">
-                            <strong>Generación:</strong> {activeData.statusStatement.energy.generationCapacity.toLocaleString()} kWh
-                          </p>
-                          <p className="info-card-row">
-                            <strong>Consumo:</strong> {activeData.statusStatement.energy.consumption.toLocaleString()} kWh
-                          </p>
-                          <p className="info-card-row">
-                            <strong>Balance Inicial:</strong>{' '}
-                            <span className={energySurplus >= 0 ? 'positive-value' : 'negative-value'}>
-                              {energySurplus >= 0 ? `+${energySurplus.toLocaleString()}` : energySurplus.toLocaleString()} kWh
-                            </span>
-                          </p>
-                          <p className="info-card-row">
-                            <strong>Costo de Generación:</strong> {activeData.statusStatement.energy.generationCost} créditos/kWh
-                          </p>
-                          <small style={{ color: '#64748b' }}>
-                            Válido hasta: {new Date(activeData.statusStatement.validUntil).toLocaleTimeString()}
-                          </small>
-                        </div>
-
-                        <div className="info-card">
-                          <h4 className="info-card-title">2. Transferencia de Fondos (transfer)</h4>
-                          <p className="transfer-amount">+{activeData.fundsReceived.toLocaleString()} créditos</p>
-                          <p className="page-subtitle">Presupuesto inicial enviado por la central.</p>
-                        </div>
-                      </div>
-
-                      {/* 3. Demand Statements */}
-                      <div>
-                        <h4 className="info-card-title">3. Demandas Impuestas (demand-statement)</h4>
-                        {activeData.demandStatements.length === 0 ? (
-                          <p className="page-subtitle">Sin órdenes obligatorias en este ciclo.</p>
-                        ) : (
-                          <table className="data-table">
-                            <thead>
-                              <tr style={{ background: '#f1f5f9' }}>
-                                <th>Cantidad</th>
-                                <th>Valor/kWh</th>
-                                <th>Efecto Energía</th>
-                                <th>Efecto Presupuesto</th>
-                                <th>Hora</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {activeData.demandStatements.map((d, idx) => {
-                                const isPositive = d.quantity >= 0;
-                                const total = Math.abs(d.quantity) * d.valuePerKwh;
-                                return (
-                                  <tr key={idx}>
-                                    <td><strong>{d.quantity.toLocaleString()} kWh</strong></td>
-                                    <td>{d.valuePerKwh} créditos</td>
-                                    <td className={isPositive ? 'positive-value' : 'negative-value'}>
-                                      {isPositive ? `+${d.quantity.toLocaleString()}` : d.quantity.toLocaleString()} kWh
-                                    </td>
-                                    <td className={isPositive ? 'negative-value' : 'positive-value'}>
-                                      {isPositive ? `-${total.toLocaleString()}` : `+${total.toLocaleString()}`} créditos
-                                    </td>
-                                    <td>{new Date(d.appliedAt).toLocaleTimeString()}</td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        )}
-                      </div>
-
-                      {/* 4. Negociaciones Voluntarias */}
-                      <div>
-                        <h4 className="info-card-title">4. Negociaciones Voluntarias</h4>
-                        {activeData.voluntaryNegotiations.length === 0 ? (
-                          <p className="page-subtitle">Sin negociaciones voluntarias en este ciclo.</p>
-                        ) : (
-                          <table className="data-table">
-                            <thead>
-                              <tr style={{ background: '#f1f5f9' }}>
-                                <th>ID</th>
-                                <th>Operación</th>
-                                <th>Cantidad</th>
-                                <th>Precio Techo</th>
-                                <th>Estado</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {activeData.voluntaryNegotiations.map((neg, idx) => (
-                                <tr key={idx}>
-                                  <td><code>{neg.proposalId || 'N/A'}</code></td>
-                                  <td><strong>{neg.direction.toUpperCase()}</strong></td>
-                                  <td>{neg.quantity.toLocaleString()} kWh</td>
-                                  <td>{neg.pricePerEnergy} créditos</td>
-                                  <td>
-                                    <span className={`status-badge ${neg.status === 'paid' ? 'badge-paid' : 'badge-timeout'}`}>
-                                      {neg.status.toUpperCase()}
-                                    </span>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        )}
-                      </div>
-
-                      {/* 5. Reporte Emitido */}
-                      <div className="final-report-card">
-                        <div>
-                          <h4 className="final-report-title">5. Reporte Emitido (negotiation-report)</h4>
-                          <p className="page-subtitle">Reportado sin multas a la central.</p>
-                          {activeData.negotiationReport.sentAt && (
-                            <small style={{ color: '#166534' }}>
-                              Emitido a las: {new Date(activeData.negotiationReport.sentAt).toLocaleTimeString()}
+                {isExpanded && (
+                  <div className="cycle-details">
+                    {loadingDetail && !selectedCycleDetails[c.cycleId] ? (
+                      <div>Cargando detalle del ciclo...</div>
+                    ) : (
+                      <>
+                        {/* 1. Status Statement & 2. Transfer */}
+                        <div className="info-cards-grid">
+                          <div className="info-card">
+                            <h4 className="info-card-title">1. Estado Inicial (status-statement)</h4>
+                            <p className="info-card-row">
+                              <strong>Generación:</strong> {activeData.statusStatement.energy.generationCapacity.toLocaleString()} kWh
+                            </p>
+                            <p className="info-card-row">
+                              <strong>Consumo:</strong> {activeData.statusStatement.energy.consumption.toLocaleString()} kWh
+                            </p>
+                            <p className="info-card-row">
+                              <strong>Balance Inicial:</strong>{' '}
+                              <span className={energySurplus >= 0 ? 'positive-value' : 'negative-value'}>
+                                {energySurplus >= 0 ? `+${energySurplus.toLocaleString()}` : energySurplus.toLocaleString()} kWh
+                              </span>
+                            </p>
+                            <p className="info-card-row">
+                              <strong>Costo de Generación:</strong> {activeData.statusStatement.energy.generationCost} créditos/kWh
+                            </p>
+                            <small style={{ color: '#64748b' }}>
+                              Válido hasta: {new Date(activeData.statusStatement.validUntil).toLocaleTimeString()}
                             </small>
-                          )}
-                        </div>
-                        <div style={{ textAlign: 'right' }}>
-                          <div className="summary-label">Balances Declarados:</div>
-                          <div className="final-report-declared">
-                            {activeData.negotiationReport.budgetBalance.toLocaleString()} créditos |{' '}
-                            {activeData.negotiationReport.energyBalance.toLocaleString()} kWh
+                          </div>
+
+                          <div className="info-card">
+                            <h4 className="info-card-title">2. Transferencia de Fondos (transfer)</h4>
+                            <p className="transfer-amount">+{activeData.fundsReceived.toLocaleString()} créditos</p>
+                            <p className="page-subtitle">Presupuesto inicial enviado por la central.</p>
                           </div>
                         </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
+
+                        {/* 3. Demand Statements */}
+                        <div>
+                          <h4 className="info-card-title">3. Demandas Impuestas (demand-statement)</h4>
+                          {activeData.demandStatements.length === 0 ? (
+                            <p className="page-subtitle">Sin órdenes obligatorias en este ciclo.</p>
+                          ) : (
+                            <table className="data-table">
+                              <thead>
+                                <tr style={{ background: '#f1f5f9' }}>
+                                  <th>Cantidad</th>
+                                  <th>Valor/kWh</th>
+                                  <th>Efecto Energía</th>
+                                  <th>Efecto Presupuesto</th>
+                                  <th>Hora</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {activeData.demandStatements.map((d, idx) => {
+                                  const isPositive = d.quantity >= 0;
+                                  const total = Math.abs(d.quantity) * d.valuePerKwh;
+                                  return (
+                                    <tr key={idx}>
+                                      <td><strong>{d.quantity.toLocaleString()} kWh</strong></td>
+                                      <td>{d.valuePerKwh} créditos</td>
+                                      <td className={isPositive ? 'positive-value' : 'negative-value'}>
+                                        {isPositive ? `+${d.quantity.toLocaleString()}` : d.quantity.toLocaleString()} kWh
+                                      </td>
+                                      <td className={isPositive ? 'negative-value' : 'positive-value'}>
+                                        {isPositive ? `-${total.toLocaleString()}` : `+${total.toLocaleString()}`} créditos
+                                      </td>
+                                      <td>{new Date(d.appliedAt).toLocaleTimeString()}</td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          )}
+                        </div>
+
+                        {/* 4. Negociaciones Voluntarias */}
+                        <div>
+                          <h4 className="info-card-title">4. Negociaciones Voluntarias</h4>
+                          {activeData.voluntaryNegotiations.length === 0 ? (
+                            <p className="page-subtitle">Sin negociaciones voluntarias en este ciclo.</p>
+                          ) : (
+                            <table className="data-table">
+                              <thead>
+                                <tr style={{ background: '#f1f5f9' }}>
+                                  <th>ID</th>
+                                  <th>Operación</th>
+                                  <th>Cantidad</th>
+                                  <th>Precio Techo</th>
+                                  <th>Estado</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {activeData.voluntaryNegotiations.map((neg, idx) => (
+                                  <tr key={idx}>
+                                    <td><code>{neg.proposalId || 'N/A'}</code></td>
+                                    <td><strong>{neg.direction.toUpperCase()}</strong></td>
+                                    <td>{neg.quantity.toLocaleString()} kWh</td>
+                                    <td>{neg.pricePerEnergy} créditos</td>
+                                    <td>
+                                      <span className={`status-badge ${neg.status === 'paid' ? 'badge-paid' : 'badge-timeout'}`}>
+                                        {neg.status.toUpperCase()}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          )}
+                        </div>
+
+                        {/* 5. Reporte Emitido (negotiation-report) */}
+                        <div className="final-report-card">
+                          {activeData.negotiationReport ? (
+                            <>
+                              <div>
+                                <h4 className="final-report-title">5. Reporte Emitido (negotiation-report)</h4>
+                                {activeData.negotiationReport.sentAt ? (
+                                  <>
+                                    <p className="page-subtitle">Reportado sin multas a la central.</p>
+                                    <small style={{ color: '#166534' }}>
+                                      Emitido a las: {new Date(activeData.negotiationReport.sentAt).toLocaleTimeString()}
+                                    </small>
+                                  </>
+                                ) : (
+                                  <p className="page-subtitle" style={{ color: '#b45309', fontStyle: 'italic' }}>
+                                    Reporte aún no enviado
+                                  </p>
+                                )}
+                              </div>
+                              <div style={{ textAlign: 'right' }}>
+                                <div className="summary-label">Balances Declarados:</div>
+                                <div className="final-report-declared">
+                                  {activeData.negotiationReport.budgetBalance !== undefined
+                                    ? `${activeData.negotiationReport.budgetBalance.toLocaleString()} créditos`
+                                    : '-'}
+                                  {' | '}
+                                  {activeData.negotiationReport.energyBalance !== undefined
+                                    ? `${activeData.negotiationReport.energyBalance.toLocaleString()} kWh`
+                                    : '-'}
+                                </div>
+                              </div>
+                            </>
+                          ) : (
+                            <div>
+                              <h4 className="final-report-title">5. Reporte Emitido (negotiation-report)</h4>
+                              <p className="page-subtitle" style={{ color: '#b45309', fontStyle: 'italic' }}>
+                                Reporte aún no enviado
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            </ErrorBoundary>  
           );
         })
       )}
