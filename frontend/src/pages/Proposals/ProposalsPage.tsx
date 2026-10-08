@@ -114,7 +114,7 @@ export const ProposalsPage: React.FC = () => {
       <div className="page-header">
         <div>
           <h2 className="page-title">Panel de Negociaciones Voluntarias (RF04)</h2>
-          <p className="page-subtitle">Emisión y control de órdenes con ventana de confirmación de 30s[cite: 1].</p>
+          <p className="page-subtitle">Emisión y control de órdenes con ventana de confirmación de 30s.</p>
         </div>
       </div>
 
