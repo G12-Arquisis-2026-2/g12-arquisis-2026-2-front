@@ -109,24 +109,6 @@ export const ProposalsPage: React.FC = () => {
     }
   };
 
-  const getStatusBadgeClass = (status: string) => {
-    const s = (status || '').toLowerCase();
-    switch (s) {
-      case 'paid':
-        return 'badge-paid';
-      case 'confirmed':
-        return 'badge-confirmed';
-      case 'pending':
-        return 'badge-pending';
-      case 'rejected':
-      case 'failed':
-      case 'expired':
-        return 'badge-rejected';
-      default:
-        return 'badge-default';
-    }
-  };
-
   return (
     <div>
       <div className="page-header">
@@ -239,39 +221,24 @@ export const ProposalsPage: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {proposals.length === 0 ? (
-              <tr>
-                <td colSpan={6} style={{ textAlign: 'center', padding: '1rem' }}>
-                  No hay propuestas registradas.
-                </td>
-              </tr>
-            ) : (
-              proposals.map((prop, idx) => {
-                const identifier = prop.idpk || prop.id || prop.proposalId || `prop-${idx}`;
-                const price = prop.price_per_energy ?? prop.pricePerEnergy ?? '-';
-
-                return (
-                  <tr key={identifier}>
-                    <td><code>{String(identifier).slice(0, 8)}...</code></td>
-                    <td><strong>{prop.direction?.toUpperCase()}</strong></td>
-                    <td>{prop.quantity?.toLocaleString()} kWh</td>
-                    <td>{price} créditos</td>
-                    <td>
-                      <span className={`status-badge ${getStatusBadgeClass(prop.status)}`}>
-                        {prop.status}
-                      </span>
-                    </td>
-                    <td>
-                      {prop.status_reason ? (
-                        <span className="status-reason-text">{prop.status_reason}</span>
-                      ) : (
-                        <span style={{ color: '#9ca3af' }}>-</span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })
-            )}
+            {proposals.map((prop, idx) => {
+              const identifier = prop?.id || prop?.proposalId || `prop-${idx}`;
+              return (
+                <tr key={identifier}>
+                  <td><code>{identifier}</code></td>
+                  <td><strong>{prop?.direction ? prop.direction.toUpperCase() : '—'}</strong></td>
+                  <td>{prop?.quantity != null ? `${prop.quantity.toLocaleString()} kWh` : '—'}</td>
+                  <td>{prop?.pricePerEnergy != null ? `${prop.pricePerEnergy} créditos` : '—'}</td>
+                  <td>
+                    <span className={`status-badge ${
+                      prop?.status === 'paid' ? 'badge-paid' : prop?.status === 'timeout' ? 'badge-timeout' : 'badge-confirmed'
+                    }`}>
+                      {prop?.status ?? 'DESCONOCIDO'}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
