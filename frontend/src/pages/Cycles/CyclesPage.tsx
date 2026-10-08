@@ -45,7 +45,7 @@ export const CyclesPage: React.FC = () => {
       <div className="page-header">
         <div>
           <h2 className="page-title">Historial de Ciclos Energéticos (RF01)</h2>
-          <p className="page-subtitle">Registro de balances, órdenes y reportes para cada ciclo de 2 horas[cite: 1, 3].</p>
+          <p className="page-subtitle">Registro de balances, órdenes y reportes para cada ciclo de 2 horas.</p>
         </div>
         <button onClick={loadData} className="btn-primary">
           Refrescar Ciclos
@@ -90,7 +90,7 @@ export const CyclesPage: React.FC = () => {
       {/* Error Boundary protegiendo la lista de ciclos */}
       <CyclesErrorBoundary onReset={loadData}>
         {!loading && !error && cycles.length === 0 && (
-          <p>No hay ciclos registrados en el ledger local[cite: 1, 3].</p>
+          <p>No hay ciclos registrados en el ledger local.</p>
         )}
 
         {!loading && !error && cycles.map((c) => {
@@ -168,7 +168,7 @@ export const CyclesPage: React.FC = () => {
                       {c.fundsReceived != null ? (
                         <>
                           <p className="transfer-amount">+{c.fundsReceived.toLocaleString()} créditos</p>
-                          <p className="page-subtitle">Presupuesto inicial enviado por la central[cite: 1, 3].</p>
+                          <p className="page-subtitle">Presupuesto inicial enviado por la central.</p>
                         </>
                       ) : (
                         <p className="page-subtitle" style={{ fontStyle: 'italic', margin: '0.5rem 0' }}>
@@ -182,7 +182,7 @@ export const CyclesPage: React.FC = () => {
                   <div>
                     <h4 className="info-card-title">3. Demandas Impuestas (demand-statement)</h4>
                     {(!c.demandStatements || c.demandStatements.length === 0) ? (
-                      <p className="page-subtitle">Sin órdenes obligatorias en este ciclo[cite: 1, 3].</p>
+                      <p className="page-subtitle">Sin órdenes obligatorias en este ciclo.</p>
                     ) : (
                       <table className="data-table">
                         <thead>
@@ -221,7 +221,7 @@ export const CyclesPage: React.FC = () => {
                   <div>
                     <h4 className="info-card-title">4. Negociaciones Voluntarias</h4>
                     {(!c.voluntaryNegotiations || c.voluntaryNegotiations.length === 0) ? (
-                      <p className="page-subtitle">Sin negociaciones voluntarias en este ciclo[cite: 1, 3].</p>
+                      <p className="page-subtitle">Sin negociaciones voluntarias en este ciclo.</p>
                     ) : (
                       <table className="data-table">
                         <thead>
@@ -260,7 +260,7 @@ export const CyclesPage: React.FC = () => {
                           <h4 className="final-report-title">5. Reporte Emitido (negotiation-report)</h4>
                           {c.negotiationReport.sentAt ? (
                             <>
-                              <p className="page-subtitle">Reportado sin multas a la central[cite: 1, 3].</p>
+                              <p className="page-subtitle">Reportado sin multas a la central.</p>
                               <small style={{ color: '#166534' }}>
                                 Emitido a las: {new Date(c.negotiationReport.sentAt).toLocaleTimeString()}
                               </small>
