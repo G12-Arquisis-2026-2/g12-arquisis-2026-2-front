@@ -11,7 +11,7 @@ export const ProposalsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Estados del formulario
+// Estados del formulario
   const [cycleId, setCycleId] = useState<string>('');
   const [direction, setDirection] = useState<'take' | 'give'>('take');
   const [quantity, setQuantity] = useState<number>(1000);

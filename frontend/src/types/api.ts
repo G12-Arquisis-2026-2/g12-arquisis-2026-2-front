@@ -82,7 +82,7 @@ export interface RejectedMessageLog {
     code: number | null;
     message: string;
     timestamp: string;
-    type: 'nack' | 'discarded';
+    type: 'nack' | 'discarded' | 'error';
 }
   
 export interface AuditLogsResponse {
