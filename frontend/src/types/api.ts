@@ -12,9 +12,9 @@ export interface ApiErrorResponse {
 // ==========================================
 
 export interface StatusStatementEnergy {
-  generationCapacity: DecimalStringOrNumber;
-  consumption: DecimalStringOrNumber;
-  generationCost: DecimalStringOrNumber;
+  generationCapacity: number;
+  consumption: number;
+  generationCost: number;
 }
 
 export interface StatusStatement {
@@ -24,51 +24,62 @@ export interface StatusStatement {
 
 export interface OwnOfferRecord {
   offerId: string;
-  initialQuantity: DecimalStringOrNumber;
-  remainingQuantity: DecimalStringOrNumber;
-  pricePerEnergy: DecimalStringOrNumber;
-  status: 'active' | 'exhausted' | 'cancelled';
+  initialQuantity: number;
+  remainingQuantity: number;
+  pricePerEnergy: number;
+  status: string;
+  publishedAt?: string;
   updates?: Array<{
-    timestamp: string;
-    remainingQuantity: DecimalStringOrNumber;
+    remaining: number;
+    updatedAt: string;
   }>;
 }
 
 export interface BidRecord {
   bidId?: string;
   offerId?: string;
-  counterpartyCityId: string;
-  direction: 'sent' | 'received';
-  quantity: DecimalStringOrNumber;
-  pricePerEnergy: DecimalStringOrNumber;
-  status: 'pending' | 'accepted' | 'rejected';
-  rejectionReason?: 'QUANTITY_UNAVAILABLE' | 'MARKET_CLOSED' | 'BELOW_MIN_BID' | string | null;
+  sourceCityId: string;
+  targetCityId: string;
+  quantity: number;
+  status: 'bid-accepted' | 'bid-rejected' | 'pending';
+  rejectionReason?: string | null;
   createdAt?: string;
 }
 
-export interface TransportChargeRecord {
-  tradeId?: string;
-  counterpartyCityId: string;
-  energyTransferred: DecimalStringOrNumber;
-  distance: number; // metros o km
-  unitRate: DecimalStringOrNumber;
-  isPenaltyRate: boolean; // true si la ruta estaba disabled
-  totalCost: DecimalStringOrNumber;
+export interface SwapCycleRecord {
+  swapId: string;
+  counterpartCityId: string;
+  giveQuantity: number;
+  giveUnit: string;
+  takeQuantity: number;
+  takeUnit: string;
+  tokenVerified: boolean;
+  status: 'pending' | 'settled' | 'rejected' | 'expired' | 'cancelled';
+  statusReason?: string | null;
+  timestamp?: string;
+}
+
+export interface TransportCharge {
+  counterpartCityId: string;
+  distanceKm: number;
+  unitCost: number;
+  totalCost: number;
+  routeDisabledPenalty: boolean;
   appliedAt?: string;
 }
 
 export interface ImbalanceSettlement {
-  type: 'surplus' | 'deficit' | 'balanced';
-  coverage: DecimalStringOrNumber; // Positivo (excedente) o negativo (déficit)
-  unitPrice: DecimalStringOrNumber; // buybackPrice o imbalancePrice
-  totalAmount: DecimalStringOrNumber;
+  coverageKwh: number;
+  pricePerKwh: number;
+  totalAmount: number;
+  type: 'deficit' | 'surplus';
   settledAt?: string;
 }
 
 export interface NegotiationReport {
-  budgetBalance: DecimalStringOrNumber;
-  energyBalance: DecimalStringOrNumber;
-  sentAt?: string | null;
+  budgetBalance: number;
+  energyBalance: number;
+  sentAt?: string;
 }
 
 export interface ReportTracking {
@@ -97,21 +108,24 @@ export type LastOperationType =
   | 'none'
   | string;
 
-export interface CycleSummary {
-  cycleId: string;
-  statusStatement?: StatusStatement | null;
-  fundsReceived?: number;
-  ownOffer?: OwnOfferRecord | null;
-  bidsSent?: BidRecord[];
-  bidsReceived?: BidRecord[];
-  swaps?: SwapRecord[];
-  transportCharges?: TransportChargeRecord[];
-  imbalanceSettlement?: ImbalanceSettlement | null;
-  negotiationReport?: NegotiationReport | null;
-  reportTracking?: ReportTracking;
-  finalBalances?: FinalBalances;
-  lastOperation?: LastOperationType;
-}
+  // RF01 - CycleSummary E2
+  export interface CycleSummary {
+    cycleId: string;
+    statusStatement?: StatusStatement;
+    fundsReceived?: number;
+    ownOffer?: OwnOfferRecord | null;
+    bidsSent?: BidRecord[];
+    bidsReceived?: BidRecord[];
+    swaps?: SwapCycleRecord[];
+    transportCharges?: TransportCharge[];
+    imbalanceSettlement?: ImbalanceSettlement | null;
+    negotiationReport?: NegotiationReport | null;
+    finalBalances?: {
+      budget: number;
+      energy: number;
+    };
+    lastOperation?: string;
+  }
 
 // ==========================================
 // RF02: MERCADO EN VIVO (LIVE BOOK & PRICING)
@@ -191,20 +205,20 @@ export interface SwapRecord {
 
 export interface DuplicateLog {
   idpk: string;
-  originalMsgId: string | null;
-  duplicateMsgId: string | null;
-  type: string | null;
+  originalMsgId: string;
+  duplicateMsgId: string;
+  type: string;
   detectedAt: string;
-  action: 'ignored_ledger_unchanged' | string;
+  action: string;
 }
 
 export interface RejectedMessageLog {
   msgId: string | null;
-  reason: 'IDENTITY_MISMATCH' | 'MALFORMED_MESSAGE' | 'BELOW_MIN_BID' | string;
+  reason: string;
   code: number | null;
   message: string;
   timestamp: string;
-  type: 'nack' | 'discarded' | 'error';
+  type: 'nack' | 'discarded' | 'identity_mismatch';
 }
 
 export interface AuditLogsResponse {

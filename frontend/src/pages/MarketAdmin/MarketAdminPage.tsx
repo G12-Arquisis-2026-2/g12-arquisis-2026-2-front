@@ -163,7 +163,7 @@ export const MarketAdminPage: React.FC = () => {
               required
             />
             <small className="help-text">
-              Pausa inicial antes de empezar a pujar en el mercado P2P.
+              Pausa inicial antes de empezar a pujar en el mercado.
             </small>
           </div>
 

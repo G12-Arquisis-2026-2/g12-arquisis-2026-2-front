@@ -109,7 +109,7 @@ export const SpanExperimentPage: React.FC = () => {
               2. Detalle Histórico por Ciclo
             </h3>
             <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '1rem' }}>
-              Comparación entre el costo efectivo asumido en el mercado P2P y la liquidación obligatoria de la central.
+              Comparación entre el costo efectivo asumido en el mercado y la liquidación obligatoria de la central.
             </p>
 
             <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
