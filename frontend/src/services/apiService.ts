@@ -5,6 +5,7 @@ import type {
   MarketLiveResponse,
   MarketConfig,
   SwapRecord,
+  SpanExperimentResponse,
   AuditLogsResponse,
 } from '../types/api';
 
@@ -54,6 +55,12 @@ export const ApiService = {
   // RF05: Logs de auditoría y anomalías
   async getAuditLogs(): Promise<AuditLogsResponse> {
     const res = await apiClient.get<AuditLogsResponse>('/audit-logs');
+    return res.data;
+  },
+
+  // RF06: Experimento de Span
+  async getSpanExperiment(): Promise<SpanExperimentResponse> {
+    const res = await apiClient.get<SpanExperimentResponse>('/experiments/span');
     return res.data;
   },
 };

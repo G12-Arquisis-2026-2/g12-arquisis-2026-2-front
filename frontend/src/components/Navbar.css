@@ -1,0 +1,395 @@
+/* CUADRO 1: Navbar independiente */
+.navbar-card {
+    background-color: var(--jp-canvas-cream);
+    border: 4px solid var(--jp-canvas-border);
+    border-radius: 18px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    padding: 0.85rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    /* Permite que si la resolución es intermedia o la ventana se achica, fluya naturalmente */
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+  }
+  
+  .navbar-top-row {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  
+  .brand-group {
+    display: flex;
+    align-items: center;
+  }
+  
+  .brand-badge {
+    display: inline-flex;
+    flex-direction: column;    /* Coloca el contenido en sentido vertical */
+    align-items: center;       /* Centra horizontalmente las letras */
+    justify-content: center;   /* Centra verticalmente */
+    border: 1.5px solid var(--jp-red-accent);
+    padding: 3px 6px;
+    font-family: 'Zen Old Mincho', serif;
+    font-size: 0.7rem;
+    font-weight: 900;
+    color: var(--jp-red-accent);
+    line-height: 1.05;         /* Reduce el alto de línea para que queden compactas */
+    letter-spacing: 0;         /* Se quita el espaciado horizontal */
+    margin-right: 0.85rem;
+    border-radius: 4px;
+  }
+  
+  .app-title {
+    margin: 0;
+    font-family: 'Zen Old Mincho', serif;
+    font-size: 1.25rem;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    color: var(--jp-ink-black);
+    white-space: nowrap;
+  }
+  
+  /* Menú colapsable en escritorio */
+  .navbar-collapse {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1.25rem;
+    flex: 1;
+    min-width: 0; /* Evita que flex items hijos se salgan del contenedor */
+    flex-wrap: wrap;
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .nav-link {
+    color: var(--jp-ink-muted);
+    text-decoration: none;
+    font-size: 0.82rem; /* Tamaño proporcional para 5 rutas */
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    position: relative;
+    padding: 4px 2px;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+  }
+  
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--jp-red-accent);
+  }
+  
+  .nav-link.active::after,
+  .nav-link:hover::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--jp-red-accent);
+  }
+  
+  .nav-auth-section {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+    
+    .auth-user-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .auth-user-name {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--jp-ink-muted);
+      max-width: 140px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; /* Evita que correos largos empujen el menú */
+    }
+  
+  .btn-login,
+  .btn-logout {
+    padding: 5px 12px;
+    font-size: 0.78rem;
+    border-radius: 9999px;
+  }
+  
+  /* Breakpoint para activar el menú hamburguesa cuando no quepan en fila */
+  @media (max-width: 1024px) {
+    .menu-toggle-btn {
+      display: flex;
+    }
+  
+    .navbar-collapse {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+      padding-top: 1rem;
+      margin-top: 0.5rem;
+      border-top: 1px dashed var(--jp-border-soft);
+    }
+  
+    .navbar-collapse.show {
+      display: flex;
+      animation: fadeInMenu 0.25s ease forwards;
+    }
+  
+    .nav-links {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.4rem;
+    }
+  
+    .nav-link {
+      font-size: 0.9rem;
+      padding: 8px 12px;
+      background-color: rgba(222, 203, 189, 0.2);
+      border-radius: 6px;
+    }
+  
+    .nav-link.active::after,
+    .nav-link:hover::after {
+      display: none;
+    }
+  
+    .nav-link.active {
+      background-color: var(--jp-card-bg);
+      border-left: 4px solid var(--jp-red-accent);
+    }
+  
+    .nav-auth-section {
+      flex-direction: column;
+      align-items: stretch;
+      border-top: 1px solid var(--jp-border-soft);
+      padding-top: 0.75rem;
+    }
+  
+    .auth-user-box {
+      justify-content: space-between;
+    }
+  
+    .auth-user-name {
+      max-width: none;
+    }
+  }
+  
+  /* Botón hamburguesa (oculto en pantallas grandes) */
+  .menu-toggle-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .menu-toggle-btn .bar {
+    display: block;
+    width: 24px;
+    height: 2.5px;
+    background-color: var(--jp-ink-black);
+    border-radius: 3px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  
+  /* Animación a 'X' del botón hamburguesa */
+  .menu-toggle-btn.open .bar:nth-child(1) {
+    transform: translateY(7.5px) rotate(45deg);
+  }
+  .menu-toggle-btn.open .bar:nth-child(2) {
+    opacity: 0;
+  }
+  .menu-toggle-btn.open .bar:nth-child(3) {
+    transform: translateY(-7.5px) rotate(-45deg);
+  }
+  
+  /* =========================================================
+     MEDIA QUERY: Tablets y Teléfonos Móviles (<= 992px)
+     ========================================================= */
+  @media (max-width: 992px) {
+    .app-container {
+      padding: 1rem 0.75rem;
+    }
+  
+    .navbar-card {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 1rem 1.25rem;
+    }
+  
+    .navbar-top-row {
+      width: 100%;
+    }
+  
+    .menu-toggle-btn {
+      display: flex;
+    }
+  
+    /* Ocultar menú por defecto en pantallas reducidas */
+    .navbar-collapse {
+      display: none;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.25rem;
+      padding-top: 1rem;
+      margin-top: 0.75rem;
+      border-top: 1px dashed var(--jp-border-soft);
+    }
+  
+    /* Mostrar cuando se activa menuOpen */
+    .navbar-collapse.show {
+      display: flex;
+      animation: fadeInMenu 0.25s ease forwards;
+    }
+  
+    .nav-links {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.5rem;
+    }
+  
+    .nav-link {
+      padding: 10px 12px;
+      border-radius: 8px;
+      background-color: rgba(222, 203, 189, 0.2);
+      font-size: 0.95rem;
+    }
+  
+    .nav-link.active::after,
+    .nav-link:hover::after {
+      display: none; /* En móvil se destaca con el color del fondo */
+    }
+  
+    .nav-link.active {
+      background-color: var(--jp-card-bg);
+      border-left: 4px solid var(--jp-red-accent);
+    }
+  
+    .nav-auth-section {
+      flex-direction: column;
+      align-items: stretch;
+      padding-top: 0.5rem;
+    }
+  
+    .auth-user-box {
+      justify-content: space-between;
+    }
+  
+    .btn-login,
+    .btn-logout {
+      width: 100%;
+      text-align: center;
+      padding: 10px 0;
+    }
+  
+    .app-canvas {
+      padding: 1.5rem 1rem;
+    }
+  }
+  
+  @keyframes fadeInMenu {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+/* Clases utilitarias compartidas */
+  .page-header {
+    margin-bottom: 2rem;
+    border-bottom: 1.5px dashed var(--jp-border-soft);
+    padding-bottom: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  
+  .page-title {
+    margin: 0;
+    font-family: 'Zen Old Mincho', serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--jp-ink-black);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .page-subtitle {
+    margin: 0.35rem 0 0 0;
+    color: var(--jp-ink-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  
+  .btn-primary {
+    background-color: var(--jp-red-accent);
+    color: #ffffff;
+    border: none;
+    border-radius: 9999px;
+    padding: 9px 22px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(216, 50, 34, 0.25);
+    transition: transform 0.15s ease, background-color 0.2s ease;
+  }
+  
+  .btn-primary:hover {
+    background-color: #be281a;
+    transform: translateY(-1px);
+  }
+  
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.88rem;
+    background-color: transparent;
+  }
+  
+  .data-table th {
+    padding: 10px 12px;
+    color: var(--jp-ink-muted);
+    border-bottom: 1.5px solid var(--jp-ink-black);
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  
+  .data-table td {
+    padding: 12px 12px;
+    border-bottom: 1px solid var(--jp-border-soft);
+    color: var(--jp-ink-black);
+  }
+  
+  .status-badge {
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  

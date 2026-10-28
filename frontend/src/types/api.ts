@@ -216,27 +216,26 @@ export interface AuditLogsResponse {
 // RF06: EXPERIMENTO DE SPAN
 // ==========================================
 
-export interface CycleSpanExperimentRecord {
+export interface SpanCycleData {
   cycleId: string;
-  spanSeconds: number;
+  configuredSpanSeconds: number;
   initialDeficitKwh: number;
-  coveredKwh: number;
+  coveredDeficitKwh: number;
   effectiveCostPaid: number;
   baselineCost: number; // 3 * imbalancePrice * deficit
-  savingsAmount: number; // baselineCost - effectiveCostPaid
-  savingsPercentage: number;
-  rejectedBidsCount: number;
+  bidsRejectedCount: number;
+  completedAt?: string;
 }
 
 export interface SpanAggregateMetrics {
   spanSeconds: number;
-  totalCyclesTested: number;
-  averageSavingsPercentage: number;
-  successPurchaseRate: number; // 0.0 a 1.0 (o porcentaje)
-  totalRejectedBids: number;
+  totalCyclesEvaluated: number;
+  averageSavingsPercent: number; // Porcentaje de ahorro respecto al baseline
+  purchaseSuccessRate: number;    // % o ratio de compras exitosas (ej: 0.85 -> 85%)
+  totalBidsRejected: number;
 }
 
 export interface SpanExperimentResponse {
-  historyByCycle: CycleSpanExperimentRecord[];
-  aggregatedBySpan: SpanAggregateMetrics[];
+  cyclesHistory: SpanCycleData[];
+  aggregates: SpanAggregateMetrics[];
 }

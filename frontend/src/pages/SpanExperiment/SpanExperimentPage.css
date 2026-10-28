@@ -1,0 +1,61 @@
+/* src/pages/SpanExperimentPage.css */
+
+.experiment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+  
+  .metric-card {
+    background-color: #ffffff;
+    border: 1.5px solid var(--jp-border-soft, #e2e8f0);
+    border-radius: 10px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  }
+  
+  .metric-card-header {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--jp-ink-muted, #64748b);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  
+  .metric-card-value {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--jp-ink-black, #0f172a);
+  }
+  
+  .metric-savings-positive {
+    color: #166534;
+  }
+  
+  .metric-savings-negative {
+    color: #991b1b;
+  }
+  
+  .badge-span {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background-color: #0f172a;
+    color: #f8fafc;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: monospace;
+  }
+  
+  .baseline-comparison {
+    font-size: 0.85rem;
+  }
+  
+  .baseline-diff {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-top: 2px;
+  }
