@@ -155,48 +155,34 @@ export interface ConnectivityResponse {
 // RF04: CONFIGURACIÓN DE ESTRATEGIA Y SWAPS
 // ==========================================
 
-export type SellerPolicy = 'FIFO' | 'HIGHEST_MARGIN' | 'LARGEST_QUANTITY';
-export type BuyerPolicy = 'LOWEST_EFFECTIVE_PRICE' | 'PRIORITIZE_ENABLED_ROUTES' | 'TIERED_WITH_MET';
-
-export interface SellerConfig {
-  marginPercent: number; // Margen sobre costo de generación / base
-  sellableFraction: number; // Fracción a poner en venta (0.0 a 1.0)
-  minBidQuantity: number;
-  acceptancePolicy: SellerPolicy;
+export interface MarketSellerConfig {
+  marginPercent: number;          // Margen sobre costo base (%)
+  sellableFraction: number;        // Fracción de energía a vender (ej. 0.5 a 1.0)
+  acceptancePolicy: 'FIFO' | 'HIGHEST_MARGIN' | 'LARGEST_QUANTITY';
 }
 
-export interface BuyerConfig {
-  spanSeconds: number; // Tiempo de espera (span) antes de pujar
-  maxAcceptableEffectivePrice?: number;
-  selectionPolicy: BuyerPolicy;
+export interface MarketBuyerConfig {
+  waitSpanSeconds: number;        // Span en segundos antes de ofertar
+  selectionPolicy: 'CHEAPEST_EFFECTIVE' | 'ENABLED_ROUTES_FIRST' | 'MET_FALLBACK';
 }
 
 export interface MarketConfig {
-  seller: SellerConfig;
-  buyer: BuyerConfig;
+  seller: MarketSellerConfig;
+  buyer: MarketBuyerConfig;
 }
-
-export type SwapStatus =
-  | 'proposed'
-  | 'token_verified'
-  | 'settled'
-  | 'rejected'
-  | 'expired'
-  | 'cancelled';
 
 export interface SwapRecord {
   swapId: string;
-  cycleId?: string;
-  proposerCityId: string;
-  acceptorCityId: string;
-  giveKwh: DecimalStringOrNumber;
-  takeCredits: DecimalStringOrNumber;
-  token?: string;
-  tokenVerified?: boolean;
-  status: SwapStatus;
+  counterpartCityId: string;
+  direction: 'give' | 'take';
+  giveQuantity: number;
+  giveUnit: string;
+  takeQuantity: number;
+  takeUnit: string;
+  tokenVerified: boolean;
+  status: 'pending' | 'settled' | 'rejected' | 'expired' | 'cancelled';
   statusReason?: string | null;
-  createdAt: string;
-  settledAt?: string | null;
+  updatedAt: string;
 }
 
 // ==========================================

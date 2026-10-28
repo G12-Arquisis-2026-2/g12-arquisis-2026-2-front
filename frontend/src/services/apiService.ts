@@ -3,6 +3,8 @@ import { apiClient } from './httpClient';
 import type {
   CycleSummary,
   MarketLiveResponse,
+  MarketConfig,
+  SwapRecord,
   AuditLogsResponse,
 } from '../types/api';
 
@@ -27,6 +29,26 @@ export const ApiService = {
   async getMarketLive(): Promise<MarketLiveResponse> {
     const res = await apiClient.get<MarketLiveResponse>('/market/live');
     return res.data;
+  },
+
+  // RF04: Configuración de mercado
+  async getMarketConfig(): Promise<MarketConfig> {
+    const res = await apiClient.get<MarketConfig>('/market/config');
+    return res.data;
+  },
+
+  async updateMarketConfig(config: MarketConfig): Promise<MarketConfig> {
+    const res = await apiClient.patch<{ status: string; config: MarketConfig }>(
+      '/market/config',
+      config
+    );
+    return res.data.config;
+  },
+
+  // RF04: Monitor de swaps en vivo
+  async getCurrentSwaps(): Promise<SwapRecord[]> {
+    const res = await apiClient.get<{ swaps: SwapRecord[] }>('/market/swaps');
+    return res.data.swaps;
   },
 
   // RF05: Logs de auditoría y anomalías
