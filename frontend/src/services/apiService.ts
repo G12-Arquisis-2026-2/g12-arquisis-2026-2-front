@@ -2,8 +2,7 @@
 import { apiClient } from './httpClient';
 import type {
   CycleSummary,
-  ConnectivityResponse,
-  VoluntaryNegotiation,
+  MarketLiveResponse,
   AuditLogsResponse,
 } from '../types/api';
 
@@ -24,26 +23,9 @@ export const ApiService = {
     return res.data.cycle;
   },
 
-  // RF02: Tabla de distancias y conectividad
-  async getConnectivity(): Promise<ConnectivityResponse> {
-    const res = await apiClient.get<ConnectivityResponse>('/connectivity');
-    return res.data;
-  },
-
-  // RF04: Listar propuestas de negociación
-  async getProposals(): Promise<VoluntaryNegotiation[]> {
-    const res = await apiClient.get<{ proposals: VoluntaryNegotiation[] }>('/proposals');
-    return res.data.proposals;
-  },
-
-  // RF04: Crear propuesta voluntaria
-  async createProposal(proposal: {
-    cycleId: string;
-    direction: 'take' | 'give';
-    quantity: number;
-    pricePerEnergy: number;
-  }): Promise<{ status: string; message: string }> {
-    const res = await apiClient.post('/proposals', proposal);
+  // RF02: Mercado en Vivo
+  async getMarketLive(): Promise<MarketLiveResponse> {
+    const res = await apiClient.get<MarketLiveResponse>('/market/live');
     return res.data;
   },
 
