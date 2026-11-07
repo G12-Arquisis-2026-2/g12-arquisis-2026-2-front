@@ -74,40 +74,46 @@ export const MarketLivePage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {data.offers.map((offer) => {
+                {data.offers.map((offer, idx) => {
                   const isRouteDisabled = !offer.routeEnabled;
+                  const rawId = offer.offerId || (offer as any).id || (offer as any).offer_id;
+                  const displayId = typeof rawId === 'string' ? `${rawId.slice(0, 8)}...` : `oferta-${idx}`;
 
                   return (
                     <tr
-                      key={offer.offerId}
+                      key={rawId || idx}
                       className={isRouteDisabled ? 'row-route-disabled' : ''}
                     >
                       <td>
-                        <strong>{offer.cityId}</strong>
+                        <strong>{offer.cityId || '—'}</strong>
                         {offer.cityId === 'MET' && (
                           <span className="badge-met">CENTRAL</span>
                         )}
                       </td>
                       <td>
-                        <code>{offer.offerId.slice(0, 8)}...</code>
+                        <code>{displayId}</code>
                       </td>
                       <td>
-                        <strong>{offer.remainingEnergy.toLocaleString()}</strong> kWh
+                        <strong>{offer.remainingEnergy != null ? offer.remainingEnergy.toLocaleString() : '—'}</strong> kWh
                       </td>
-                      <td>{offer.pricePerEnergy.toFixed(2)} cr/kWh</td>
+                      <td>{offer.pricePerEnergy != null ? `${Number(offer.pricePerEnergy).toFixed(2)} cr/kWh` : '—'}</td>
                       <td>
                         {offer.distanceKm != null
                           ? `${offer.distanceKm.toLocaleString()} km`
-                          : `${(offer.distance / 1000).toLocaleString()} km`}
+                          : offer.distance != null
+                          ? `${(offer.distance / 1000).toLocaleString()} km`
+                          : '—'}
                       </td>
                       <td>
                         <span className={isRouteDisabled ? 'penalty-rate' : ''}>
-                          +{offer.transportCostPerKwh.toFixed(4)} cr/kWh
+                          {offer.transportCostPerKwh != null
+                            ? `+${Number(offer.transportCostPerKwh).toFixed(4)} cr/kWh`
+                            : '—'}
                         </span>
                       </td>
                       <td>
                         <strong className="effective-price-value">
-                          {offer.effectivePrice.toFixed(2)}
+                          {offer.effectivePrice != null ? Number(offer.effectivePrice).toFixed(2) : '—'}
                         </strong>{' '}
                         <small>cr/kWh</small>
                       </td>

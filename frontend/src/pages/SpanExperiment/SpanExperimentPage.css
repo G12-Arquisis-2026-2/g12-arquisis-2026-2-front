@@ -59,3 +59,56 @@
     font-weight: 700;
     margin-top: 2px;
   }
+
+/* Controles de paginación para el detalle de experimentos */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 0.85rem 1.25rem;
+  background-color: var(--jp-canvas-cream, #f8fafc);
+  border: 1.5px solid var(--jp-border-soft, #e2e8f0);
+  border-radius: 10px;
+}
+
+.pagination-info {
+  font-size: 0.85rem;
+  color: var(--jp-ink-muted, #64748b);
+  font-weight: 600;
+}
+
+.pagination-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-btn {
+  padding: 6px 14px;
+  background-color: var(--jp-card-bg, #ffffff);
+  border: 1.5px solid var(--jp-border-soft, #e2e8f0);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--jp-ink-black, #0f172a);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  border-color: var(--jp-red-accent, #0284c7);
+  color: var(--jp-red-accent, #0284c7);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pagination-current {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--jp-ink-black, #0f172a);
+  padding: 0 0.5rem;
+}

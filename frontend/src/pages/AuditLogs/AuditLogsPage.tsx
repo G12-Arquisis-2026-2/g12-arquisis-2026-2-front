@@ -4,6 +4,7 @@ import type { AuditLogsResponse } from '../../types/api';
 import { ErrorMessage } from '../../components/ErrorMessage';
 import './AuditLogsPage.css';
 
+const DUPLICATES_PER_PAGE = 7;
 const REJECTED_PER_PAGE = 7;
 
 export const AuditLogsPage: React.FC = () => {
@@ -12,7 +13,8 @@ export const AuditLogsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [filterReason, setFilterReason] = useState<string>('ALL');
 
-  // Estado de paginación para Mensajes Rechazados
+  // Estados de paginación
+  const [currentDupPage, setCurrentDupPage] = useState<number>(1);
   const [currentRejPage, setCurrentRejPage] = useState<number>(1);
 
   const fetchAuditLogs = () => {
@@ -31,7 +33,20 @@ export const AuditLogsPage: React.FC = () => {
     fetchAuditLogs();
   }, []);
 
-  // Filtrado de incidentes
+  // --- LÓGICA SECCIÓN 1: DUPLICADOS (IDEMPOTENCIA) ---
+  const allDuplicates = useMemo(() => logs?.duplicates || [], [logs]);
+
+  useEffect(() => {
+    setCurrentDupPage(1);
+  }, [allDuplicates.length]);
+
+  const totalDupPages = Math.max(1, Math.ceil(allDuplicates.length / DUPLICATES_PER_PAGE));
+  const paginatedDuplicates = useMemo(() => {
+    const start = (currentDupPage - 1) * DUPLICATES_PER_PAGE;
+    return allDuplicates.slice(start, start + DUPLICATES_PER_PAGE);
+  }, [allDuplicates, currentDupPage]);
+
+  // --- LÓGICA SECCIÓN 2: RECHAZADOS ---
   const filteredRejections = useMemo(() => {
     if (!logs?.rejectedMessages) return [];
     if (filterReason === 'ALL') return logs.rejectedMessages;
@@ -43,12 +58,10 @@ export const AuditLogsPage: React.FC = () => {
     return logs.rejectedMessages.filter((r) => r.type === filterReason);
   }, [logs, filterReason]);
 
-  // Si cambia el filtro o los datos, se regresa a la página 1
   useEffect(() => {
     setCurrentRejPage(1);
   }, [filterReason, logs?.rejectedMessages?.length]);
 
-  // Paginación: máximo 7 elementos
   const totalRejPages = Math.max(1, Math.ceil(filteredRejections.length / REJECTED_PER_PAGE));
   const paginatedRejections = useMemo(() => {
     const start = (currentRejPage - 1) * REJECTED_PER_PAGE;
@@ -74,7 +87,7 @@ export const AuditLogsPage: React.FC = () => {
 
       {!loading && !error && logs && (
         <>
-          {/* SECCIÓN 1: DUPLICADOS IDPK */}
+          {/* SECCIÓN 1: DUPLICADOS IDPK (PAGINADA) */}
           <section className="audit-section">
             <h3 className="audit-section-title-dup">1. Mensajes Duplicados Ignorados (Idempotencia)</h3>
             <p className="page-subtitle">
@@ -91,14 +104,14 @@ export const AuditLogsPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {logs.duplicates.length === 0 ? (
+                {allDuplicates.length === 0 ? (
                   <tr>
                     <td colSpan={5} style={{ textAlign: 'center', color: '#64748b', padding: '12px' }}>
                       No se han detectado mensajes duplicados.
                     </td>
                   </tr>
                 ) : (
-                  logs.duplicates.map((dup, idx) => (
+                  paginatedDuplicates.map((dup, idx) => (
                     <tr key={idx}>
                       <td><code>{dup.idpk}</code></td>
                       <td>{dup.type}</td>
@@ -110,14 +123,43 @@ export const AuditLogsPage: React.FC = () => {
                 )}
               </tbody>
             </table>
+
+            {/* Paginación de Duplicados */}
+            {allDuplicates.length > 0 && (
+              <div className="pagination-container">
+                <span className="pagination-info">
+                  Mostrando {Math.min((currentDupPage - 1) * DUPLICATES_PER_PAGE + 1, allDuplicates.length)} -{' '}
+                  {Math.min(currentDupPage * DUPLICATES_PER_PAGE, allDuplicates.length)} de{' '}
+                  {allDuplicates.length} duplicados
+                </span>
+                <div className="pagination-actions">
+                  <button
+                    className="pagination-btn"
+                    disabled={currentDupPage === 1}
+                    onClick={() => setCurrentDupPage((p) => Math.max(1, p - 1))}
+                  >
+                    ← Anterior
+                  </button>
+                  <span className="pagination-current">
+                    Página {currentDupPage} de {totalDupPages}
+                  </span>
+                  <button
+                    className="pagination-btn"
+                    disabled={currentDupPage === totalDupPages}
+                    onClick={() => setCurrentDupPage((p) => Math.min(totalDupPages, p + 1))}
+                  >
+                    Siguiente →
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
 
-          {/* SECCIÓN 2: RECHAZADOS PAGINADOS (MÁXIMO 7) */}
+          {/* SECCIÓN 2: RECHAZADOS PAGINADOS */}
           <section className="audit-section">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3 className="audit-section-title-rej">2. Mensajes Rechazados (NACK), IDENTITY_MISMATCH y Descartes</h3>
               
-              {/* Filtro rápido */}
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                 <label style={{ fontSize: '0.85rem', fontWeight: 600 }}>Filtrar:</label>
                 <select 
@@ -126,7 +168,7 @@ export const AuditLogsPage: React.FC = () => {
                   style={{ padding: '4px 8px', borderRadius: '4px', border: '1.5px solid var(--jp-border-soft)' }}
                 >
                   <option value="ALL">Todos los rechazos</option>
-                  <option value="IDENTITY_MISMATCH">IDENTITY_MISMATCH</option>
+                  <option value="IDENTITY_MISMATCH">⚠️ IDENTITY_MISMATCH</option>
                   <option value="nack">Solo NACKs</option>
                   <option value="discarded">Solo Descartes silenciosos</option>
                 </select>
@@ -163,7 +205,7 @@ export const AuditLogsPage: React.FC = () => {
                       <tr key={idx} style={isIdentityMismatch ? { backgroundColor: '#fee2e2' } : {}}>
                         <td>
                           {isIdentityMismatch ? (
-                            <span style={{ color: '#dc2626', fontWeight: 900 }}>IDENTITY_MISMATCH</span>
+                            <span style={{ color: '#dc2626', fontWeight: 900 }}>⚠️ IDENTITY_MISMATCH</span>
                           ) : (
                             <strong>{rej.type.toUpperCase()}</strong>
                           )}
@@ -180,7 +222,7 @@ export const AuditLogsPage: React.FC = () => {
               </tbody>
             </table>
 
-            {/* Barra de Paginación para Rechazados (solo si hay elementos) */}
+            {/* Paginación de Rechazados */}
             {filteredRejections.length > 0 && (
               <div className="pagination-container">
                 <span className="pagination-info">
