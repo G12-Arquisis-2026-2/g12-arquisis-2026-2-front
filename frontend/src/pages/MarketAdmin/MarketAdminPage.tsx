@@ -7,7 +7,7 @@ import './MarketAdminPage.css';
 export const MarketAdminPage: React.FC = () => {
   const [strategy, setStrategy] = useState<MarketStrategyPayload>({
     sellPriceMultiplier: 1.1,
-    maxBuyEffectivePriceRatio: 1.25,
+    maxBuyEffectivePriceRatio: 1.0,
     spanSeconds: 60,
   });
 
@@ -56,10 +56,8 @@ export const MarketAdminPage: React.FC = () => {
       });
     } catch (err: any) {
       console.error('Error al actualizar estrategia:', err);
-      const msg =
-        err.response?.data?.error ||
-        err.response?.data?.message ||
-        'Error al guardar la nueva estrategia en el backend.';
+              const d = err.response?.data;
+        const msg = d?.errors ? Object.entries(d.errors).map(([k, v]) => `${k}: ${(v as string[]).join(', ')}`).join(' | ') : d?.error || d?.message || 'Error al guardar la nueva estrategia en el backend.';
       setFeedback({
         text: typeof msg === 'string' ? msg : JSON.stringify(msg),
         isError: true,
@@ -113,7 +111,7 @@ export const MarketAdminPage: React.FC = () => {
                 <input
                   type="number"
                   step="0.01"
-                  min="0.5"
+                  min="1"
                   max="5.0"
                   value={strategy.sellPriceMultiplier}
                   onChange={(e) =>
@@ -139,8 +137,8 @@ export const MarketAdminPage: React.FC = () => {
                 <input
                   type="number"
                   step="0.01"
-                  min="0.1"
-                  max="10.0"
+                  min="0.01" 
+                  max="1"
                   value={strategy.maxBuyEffectivePriceRatio}
                   onChange={(e) =>
                     setStrategy({
@@ -160,7 +158,7 @@ export const MarketAdminPage: React.FC = () => {
                 <input
                   type="number"
                   step="1"
-                  min="0"
+                  min="1"
                   max="1200"
                   value={strategy.spanSeconds}
                   onChange={(e) =>
