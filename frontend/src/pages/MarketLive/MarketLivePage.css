@@ -1,0 +1,57 @@
+/* src/pages/MarketLivePage.css */
+.market-meta {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.85rem;
+    color: var(--jp-ink-muted);
+  }
+  
+  .market-table {
+    margin-top: 1.5rem;
+  }
+  
+  .market-table th {
+    border-bottom: 2px solid var(--jp-ink-black);
+  }
+  
+  .badge-met {
+    display: inline-block;
+    margin-left: 6px;
+    background-color: #0284c7;
+    color: #ffffff;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+  
+  .effective-price-value {
+    font-size: 1.05rem;
+    color: var(--jp-red-accent);
+  }
+  
+  .badge-enabled {
+    background-color: #1c1917;
+    color: #f5eee3;
+  }
+  
+  .badge-disabled {
+    background-color: transparent;
+    border: 1.5px solid var(--jp-red-accent);
+    color: var(--jp-red-accent);
+  }
+  
+  .penalty-rate {
+    color: var(--jp-red-accent);
+    font-weight: 700;
+  }
+  
+  .row-route-disabled {
+    background-color: #fbeee8;
+  }
+  
+  .empty-market-text {
+    font-style: italic;
+    color: var(--jp-ink-muted);
+    margin-top: 2rem;
+  }

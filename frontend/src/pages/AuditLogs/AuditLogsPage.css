@@ -36,3 +36,56 @@
   padding: 3px 8px;
   border-radius: 4px;
 }
+
+/* Controles de paginación para auditoría */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 0.85rem 1.25rem;
+  background-color: var(--jp-canvas-cream);
+  border: 1.5px solid var(--jp-border-soft);
+  border-radius: 10px;
+}
+
+.pagination-info {
+  font-size: 0.85rem;
+  color: var(--jp-ink-muted);
+  font-weight: 600;
+}
+
+.pagination-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-btn {
+  padding: 6px 14px;
+  background-color: var(--jp-card-bg);
+  border: 1.5px solid var(--jp-border-soft);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--jp-ink-black);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  border-color: var(--jp-red-accent);
+  color: var(--jp-red-accent);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pagination-current {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--jp-ink-black);
+  padding: 0 0.5rem;
+}
