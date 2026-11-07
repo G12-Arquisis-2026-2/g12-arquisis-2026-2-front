@@ -1,5 +1,5 @@
 // src/components/ProtectedRoute.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { withAuthenticationRequired, useAuth0 } from '@auth0/auth0-react';
 
 interface Props {
@@ -8,6 +8,20 @@ interface Props {
 
 export const ProtectedRoute: React.FC<Props> = ({ component: Component }) => {
   const { error } = useAuth0();
+
+  // Crear el HOC una sola vez por componente; si se crea en cada render,
+  // React desmonta/remonta la página y su useEffect de carga se repite en loop.
+  const ComponentWithAuth = useMemo(
+    () =>
+      withAuthenticationRequired(Component, {
+        onRedirecting: () => (
+          <div style={{ padding: '2rem', textAlign: 'center' }}>
+            Redirigiendo al inicio de sesión...
+          </div>
+        ),
+      }),
+    [Component]
+  );
 
   if (error) {
     return (
@@ -23,14 +37,6 @@ export const ProtectedRoute: React.FC<Props> = ({ component: Component }) => {
       </div>
     );
   }
-
-  const ComponentWithAuth = withAuthenticationRequired(Component, {
-    onRedirecting: () => (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        Redirigiendo al inicio de sesión...
-      </div>
-    ),
-  });
 
   return <ComponentWithAuth />;
 };
