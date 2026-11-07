@@ -23,16 +23,13 @@ export const App: React.FC = () => {
           <main className="app-canvas">
             <AxiosAuthBridge>
               <Routes>
-                <Route path="/" element={<Navigate to="/market" replace />} />
+                <Route path="/" element={<Navigate to="/cycles" replace />} />
                 <Route path="/cycles" element={<ProtectedRoute component={CyclesPage} />} />
                 <Route path="/market" element={<ProtectedRoute component={MarketLivePage} />} />
                 <Route path="/control" element={<ProtectedRoute component={MarketAdminPage} />} />
                 <Route path="/experiments" element={<ProtectedRoute component={SpanExperimentPage} />} />
                 <Route path="/audit" element={<ProtectedRoute component={AuditLogsPage} />} />
-                
-                {/* Redirecciones de compatibilidad */}
-                <Route path="/connectivity" element={<Navigate to="/market" replace />} />
-                <Route path="/proposals" element={<Navigate to="/control" replace />} />
+                <Route path="*" element={<Navigate to="/cycles" replace />}  />
               </Routes>
             </AxiosAuthBridge>
           </main>

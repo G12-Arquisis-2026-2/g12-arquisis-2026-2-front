@@ -74,35 +74,45 @@ export const CyclesPage: React.FC = () => {
       {error && !loading && <ErrorMessage message={error} onRetry={loadData} />}
 
       {/* Tarjeta destacada del ciclo actual */}
-      {currentCycle && !error && !loading && (
-        <div className="cycle-card current-cycle-highlight">
-          <div className="current-cycle-header">
-            <div className="current-cycle-title-group">
-              <span className="current-cycle-badge">
-                {isCurrentExpired ? 'ÚLTIMO CICLO' : 'EN CURSO'}
-              </span>
-              <strong className="current-cycle-id">Ciclo: {currentCycle.cycleId || '—'}</strong>
+      {!loading && !error && (
+        currentCycle ? (
+          <div className="cycle-card current-cycle-highlight">
+            <div className="current-cycle-header">
+              <div className="current-cycle-title-group">
+                <span className="current-cycle-badge">
+                  {isCurrentExpired ? 'ÚLTIMO CICLO' : 'EN CURSO'}
+                </span>
+                <strong className="current-cycle-id">Ciclo: {currentCycle.cycleId || '—'}</strong>
+              </div>
+              <div className="current-cycle-timer">
+                {currentCycle.statusStatement?.validUntil
+                  ? (isCurrentExpired
+                      ? `Ciclo cerrado a las ${new Date(currentCycle.statusStatement.validUntil).toLocaleTimeString()}`
+                      : `Válido hasta: ${new Date(currentCycle.statusStatement.validUntil).toLocaleTimeString()}`)
+                  : 'Sin fecha de vigencia'}
+              </div>
             </div>
-            <div className="current-cycle-timer">
-              {currentCycle.statusStatement?.validUntil
-                ? (isCurrentExpired
-                    ? `Ciclo cerrado a las ${new Date(currentCycle.statusStatement.validUntil).toLocaleTimeString()}`
-                    : `Válido hasta: ${new Date(currentCycle.statusStatement.validUntil).toLocaleTimeString()}`)
-                : 'Sin fecha de vigencia'}
+            <div className="current-cycle-stats">
+              <div>
+                Generación: <strong>{currentCycle.statusStatement?.energy?.generationCapacity != null ? `${Number(currentCycle.statusStatement.energy.generationCapacity).toLocaleString()} kWh` : '—'}</strong>
+              </div>
+              <div>
+                Consumo: <strong>{currentCycle.statusStatement?.energy?.consumption != null ? `${Number(currentCycle.statusStatement.energy.consumption).toLocaleString()} kWh` : '—'}</strong>
+              </div>
+              <div>
+                Fondos: <span>{currentCycle.fundsReceived != null ? `+${Number(currentCycle.fundsReceived).toLocaleString()} créditos` : 'Aún sin fondos'}</span>
+              </div>
             </div>
           </div>
-          <div className="current-cycle-stats">
-            <div>
-              Generación: <strong>{currentCycle.statusStatement?.energy?.generationCapacity != null ? `${currentCycle.statusStatement.energy.generationCapacity.toLocaleString()} kWh` : '—'}</strong>
-            </div>
-            <div>
-              Consumo: <strong>{currentCycle.statusStatement?.energy?.consumption != null ? `${currentCycle.statusStatement.energy.consumption.toLocaleString()} kWh` : '—'}</strong>
-            </div>
-            <div>
-              Fondos: <span>{currentCycle.fundsReceived != null ? `+${currentCycle.fundsReceived.toLocaleString()} créditos` : 'Aún sin fondos'}</span>
-            </div>
+        ) : (
+          <div className="cycle-card" style={{ padding: '1.25rem 1.75rem', marginBottom: '2rem', background: '#f8fafc', border: '1.5px dashed #cbd5e1', textAlign: 'center' }}>
+            <span style={{ fontSize: '1.2rem', marginRight: '0.5rem' }}>⏸️</span>
+            <strong style={{ color: '#64748b' }}>Sin ciclo activo</strong>
+            <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>
+              El broker o la central aún no han abierto una nueva ventana de negociación.
+            </p>
           </div>
-        </div>
+        )
       )}
 
       {/* Lista de ciclos protegida con ErrorBoundary y limitada a 5 */}

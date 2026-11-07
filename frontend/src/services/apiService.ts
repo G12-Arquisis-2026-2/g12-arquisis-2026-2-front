@@ -2,11 +2,13 @@
 import { apiClient } from './httpClient';
 import type {
   CycleSummary,
+  SpanCycleData,
   MarketLiveResponse,
   MarketConfig,
   SwapRecord,
-  SpanExperimentResponse,
   AuditLogsResponse,
+  MarketStrategyPayload,
+  MarketStrategy
 } from '../types/api';
 
 export const ApiService = {
@@ -16,9 +18,16 @@ export const ApiService = {
     return res.data.cycles;
   },
 
-  async getCurrentCycle(): Promise<CycleSummary> {
-    const res = await apiClient.get<{ cycle: CycleSummary }>('/cycles/current');
-    return res.data.cycle;
+  async getCurrentCycle(): Promise<CycleSummary | null> {
+    try {
+      const res = await apiClient.get<any>('/cycles/current');
+      return res.data?.cycle || res.data;
+    } catch (err: any) {
+      if (err.response?.status === 404) {
+        return null;
+      }
+      throw err;
+    }
   },
 
   async getCycleById(id: string): Promise<CycleSummary> {
@@ -52,6 +61,27 @@ export const ApiService = {
     return res.data.swaps;
   },
 
+  // RF04: Obtener estrategia actual del mercado
+  async getMarketStrategy(): Promise<MarketStrategy> {
+    const res = await apiClient.get<any>('/market-strategy');
+    // Tolera tanto el objeto plano como si viene envuelto en { marketStrategy: ... }
+    return res.data?.marketStrategy || res.data;
+  },
+
+  // RF04: Actualizar parámetros en caliente (PATCH /market-strategy enviando { marketStrategy: {...} })
+  async updateMarketStrategy(payload: MarketStrategyPayload): Promise<MarketStrategy> {
+    const res = await apiClient.patch<any>('/market-strategy', {
+      marketStrategy: {
+        sellPriceMultiplier: Number(payload.sellPriceMultiplier),
+        maxBuyEffectivePriceRatio: Number(payload.maxBuyEffectivePriceRatio),
+        spanSeconds: parseInt(String(payload.spanSeconds), 10),
+      },
+    });
+
+    // Si responde 200 o 201 Created
+    return res.data?.marketStrategy || res.data;
+  },
+
   // RF05: Logs de auditoría y anomalías
   async getAuditLogs(): Promise<AuditLogsResponse> {
     const res = await apiClient.get<AuditLogsResponse>('/audit-logs');
@@ -59,8 +89,16 @@ export const ApiService = {
   },
 
   // RF06: Experimento de Span
-  async getSpanExperiment(): Promise<SpanExperimentResponse> {
-    const res = await apiClient.get<SpanExperimentResponse>('/experiments/span');
-    return res.data;
+  async getSpanExperiment(): Promise<SpanCycleData[]> {
+    try {
+      const res = await apiClient.get<any>('/experiments/span');
+      if (Array.isArray(res.data)) {
+        return res.data;
+      }
+      return res.data?.cyclesHistory || res.data?.cycles || res.data?.historyByCycle || [];
+    } catch (err) {
+      console.warn('/experiments/span no disponible o con error, retornando lista vacía');
+      return [];
+    }
   },
 };

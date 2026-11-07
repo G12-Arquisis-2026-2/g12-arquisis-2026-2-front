@@ -109,22 +109,62 @@ export type LastOperationType =
   | string;
 
   // RF01 - CycleSummary E2
+
   export interface CycleSummary {
-    cycleId: string;
-    statusStatement?: StatusStatement;
-    fundsReceived?: number;
-    ownOffer?: OwnOfferRecord | null;
-    bidsSent?: BidRecord[];
-    bidsReceived?: BidRecord[];
-    swaps?: SwapCycleRecord[];
-    transportCharges?: TransportCharge[];
-    imbalanceSettlement?: ImbalanceSettlement | null;
-    negotiationReport?: NegotiationReport | null;
-    finalBalances?: {
-      budget: number;
-      energy: number;
-    };
-    lastOperation?: string;
+  cycleId: string;
+  statusStatement?: StatusStatement;
+  fundsReceived?: number;
+
+  // Campos E2
+  ownOffer?: OwnOfferRecord | null;
+  bidsSent?: BidRecord[];
+  bidsReceived?: BidRecord[];
+  swaps?: SwapCycleRecord[];
+  transportCharges?: TransportCharge[];
+  imbalanceSettlement?: ImbalanceSettlement | null;
+
+  // Campos E1 (enviados actualmente por el backend mientras hacen el cambio)
+  demandStatements?: Array<{
+    quantity: number;
+    valuePerKwh: number;
+    appliedAt?: string;
+  }>;
+  voluntaryNegotiations?: Array<{
+    id?: string;
+    proposalId?: string;
+    direction: 'take' | 'give';
+    quantity: number;
+    pricePerEnergy?: number;
+    price_per_energy?: number;
+    status: string;
+  }>;
+
+  // Metadata común
+  negotiationReport?: NegotiationReport | null;
+  finalBalances?: {
+    budget: number;
+    energy: number;
+  };
+  lastOperation?: string;
+}
+
+  export interface MarketStrategyPayload {
+    // Parámetros de vendedor
+    marginPercent?: number;
+    sellableFraction?: number;
+    acceptancePolicy?: 'FIFO' | 'HIGHEST_MARGIN' | 'LARGEST_QUANTITY' | string;
+    
+    // Parámetros de comprador
+    waitSpanSeconds?: number;
+    selectionPolicy?: 'CHEAPEST_EFFECTIVE' | 'ENABLED_ROUTES_FIRST' | 'MET_FALLBACK' | string;
+
+    // Campos adicionales que soporte el modelo ActiveRecord
+    [key: string]: any;
+  }
+
+  export interface MarketStrategyResponse {
+    id?: number | string;
+    marketStrategy: MarketStrategyPayload;
   }
 
 // ==========================================
@@ -197,6 +237,21 @@ export interface SwapRecord {
   status: 'pending' | 'settled' | 'rejected' | 'expired' | 'cancelled';
   statusReason?: string | null;
   updatedAt: string;
+}
+
+export interface MarketStrategy {
+  id?: number | string;
+  sellPriceMultiplier: number;           // Multiplicador de precio de venta sobre generationCost (ej: 1.15)
+  maxBuyEffectivePriceRatio: number;     // Ratio máximo de precio efectivo aceptado para compras
+  spanSeconds: number;                   // Segundos de espera antes de comprar en el mercado P2P
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface MarketStrategyPayload {
+  sellPriceMultiplier: number;
+  maxBuyEffectivePriceRatio: number;
+  spanSeconds: number;
 }
 
 // ==========================================
