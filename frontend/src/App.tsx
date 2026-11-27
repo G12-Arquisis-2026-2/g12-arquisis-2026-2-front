@@ -6,6 +6,7 @@ import { MarketLivePage } from './pages/MarketLive/MarketLivePage.tsx';
 import { MarketAdminPage } from './pages/MarketAdmin/MarketAdminPage';
 import { SpanExperimentPage } from './pages/SpanExperiment/SpanExperimentPage';
 import { AuditLogsPage } from './pages/AuditLogs/AuditLogsPage';
+import { LiveActivityPanel } from './components/LiveActivityPanel';
 
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AxiosAuthBridge } from './components/AxiosAuthBridge';
@@ -22,6 +23,7 @@ export const App: React.FC = () => {
           {/* Lienzo principal con las rutas protegidas */}
           <main className="app-canvas">
             <AxiosAuthBridge>
+              <LiveActivityPanel />
               <Routes>
                 <Route path="/" element={<Navigate to="/cycles" replace />} />
                 <Route path="/cycles" element={<ProtectedRoute component={CyclesPage} />} />

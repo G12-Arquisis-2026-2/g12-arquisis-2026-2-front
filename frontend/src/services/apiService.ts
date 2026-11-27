@@ -8,7 +8,10 @@ import type {
   SwapRecord,
   AuditLogsResponse,
   MarketStrategyPayload,
-  MarketStrategy
+  MarketStrategy,
+  FeedTicketResponse,
+  FeedEventRecord,
+  FeedSnapshotResponse
 } from '../types/api';
 
 // Normaliza las respuestas del back a la forma que usan las páginas (E2)
@@ -162,5 +165,19 @@ export const ApiService = {
       console.warn('/experiments/span no disponible o con error, retornando lista vacía');
       return [];
     }
+  },
+
+  // RF01 (E3): Solicitar ticket efímero de un solo uso para SSE (TTL 30s)
+  async createFeedTicket(): Promise<FeedTicketResponse> {
+    const res = await apiClient.post<FeedTicketResponse>('/events/ticket');
+    return res.data;
+  },
+
+  // RF01 (E3): Hidratación inicial de eventos recientes
+  async getFeedSnapshot(limit = 50): Promise<FeedEventRecord[]> {
+    const res = await apiClient.get<FeedSnapshotResponse>('/events/feed', {
+      params: { limit },
+    });
+    return res.data.events || [];
   },
 };

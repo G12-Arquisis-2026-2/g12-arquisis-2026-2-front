@@ -2,8 +2,16 @@
 import axios from 'axios';
 import type { InternalAxiosRequestConfig } from 'axios';
 
+const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
+
+if (!configuredBaseUrl && import.meta.env.PROD) {
+  throw new Error(
+    'Falta la variable de entorno VITE_API_BASE_URL en el build de producción.'
+  );
+}
+
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
+  baseURL: configuredBaseUrl || 'http://localhost:3000',
   headers: {
     'Content-Type': 'application/json',
   },
