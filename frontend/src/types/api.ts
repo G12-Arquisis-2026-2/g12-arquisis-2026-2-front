@@ -41,8 +41,11 @@ export interface BidRecord {
   sourceCityId: string;
   targetCityId: string;
   quantity: number;
-  status: 'bid-accepted' | 'bid-rejected' | 'pending';
+  status: 'bid-accepted' | 'bid-rejected' | 'pending' | string;
   rejectionReason?: string | null;
+  rejection_reason?: string | null;
+  statusReason?: string | null;
+  status_reason?: string | null;
   createdAt?: string;
 }
 
@@ -53,9 +56,11 @@ export interface SwapCycleRecord {
   giveUnit: string;
   takeQuantity: number;
   takeUnit: string;
-  tokenVerified: boolean;
-  status: 'pending' | 'settled' | 'rejected' | 'expired' | 'cancelled';
+  tokenVerified?: boolean;
+  token_verified?: boolean;
+  status: 'pending' | 'settled' | 'rejected' | 'expired' | 'cancelled' | string;
   statusReason?: string | null;
+  status_reason?: string | null;
   timestamp?: string;
 }
 
@@ -176,7 +181,9 @@ export interface MarketOffer {
   cityId: string;
   pricePerEnergy: number;
   remainingEnergy: number;
+  remaining_energy?: number;
   initialQuantity?: number;
+  status?: string;
   // Campos cruzados con la distance-table de tu ciudad
   distance: number; // en metros
   distanceKm: number;
@@ -307,4 +314,25 @@ export interface SpanAggregateMetrics {
 export interface SpanExperimentResponse {
   cyclesHistory: SpanCycleData[];
   aggregates: SpanAggregateMetrics[];
+}
+
+export type FeedEventCategory = 'market' | 'wallet' | 'saga' | 'alert';
+
+export interface FeedEventRecord {
+  id: number;
+  type: string;
+  cycleId?: string | null;
+  swapId?: string | null;
+  idpk?: string | null;
+  payload: Record<string, any>;
+  timestamp: string;
+}
+
+export interface FeedTicketResponse {
+  ticket: string;
+  expiresIn: number;
+}
+
+export interface FeedSnapshotResponse {
+  events: FeedEventRecord[];
 }

@@ -37,6 +37,15 @@ export const SpanExperimentPage: React.FC = () => {
     setCurrentHistoryPage(1);
   }, [cyclesHistory.length]);
 
+  // Calcula el baseline de 3x imbalancePrice tolerando distintos formatos del backend
+  const resolveTripleBaseline = (c: any): number => {
+    if (c.baselineCost3x != null) return Number(c.baselineCost3x);
+    if (c.imbalancePrice != null && c.initialDeficitKwh != null) {
+      return 3 * Number(c.imbalancePrice) * Number(c.initialDeficitKwh);
+    }
+    // El backend entrega baselineCost como 1x (imbalancePrice * deficit), multiplicamos por 3
+    return Number(c.baselineCost ?? 0) * 3;
+  };
   // Cálculo dinámico de agregados agrupados por spanSeconds
   const aggregates: SpanAggregateMetrics[] = useMemo(() => {
     if (!cyclesHistory || cyclesHistory.length === 0) return [];
@@ -55,7 +64,7 @@ export const SpanExperimentPage: React.FC = () => {
 
     cyclesHistory.forEach((c: any) => {
       const span = Number(c.configuredSpanSeconds ?? c.spanSeconds ?? 0);
-      const baseline = Number(c.baselineCost ?? 0);
+      const baseline = resolveTripleBaseline(c);
       const paid = Number(c.effectiveCostPaid ?? 0);
       const initialDeficit = Number(c.initialDeficitKwh ?? 0);
       const coveredDeficit = Number(c.coveredDeficitKwh ?? c.coveredKwh ?? 0);
@@ -279,7 +288,7 @@ export const SpanExperimentPage: React.FC = () => {
                     const initialDeficit = Number(cycle.initialDeficitKwh ?? 0);
                     const coveredDeficit = Number(cycle.coveredDeficitKwh ?? cycle.coveredKwh ?? 0);
                     const paid = Number(cycle.effectiveCostPaid ?? 0);
-                    const baseline = Number(cycle.baselineCost ?? 0);
+                    const baseline = resolveTripleBaseline(cycle);
                     const rejected = Number(cycle.bidsRejectedCount ?? cycle.rejectedBidsCount ?? 0);
                     const savings = baseline - paid;
                     const savingsPercent =

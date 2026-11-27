@@ -29,6 +29,12 @@ export const MarketLivePage: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const activeOffers = (data?.offers || []).filter((offer) => {
+    const remaining = Number(offer.remainingEnergy ?? offer.remaining_energy ?? 0);
+    const status = (offer.status || 'active').toLowerCase();
+    return remaining > 0 && status === 'active';
+  });
+
   return (
     <div>
       <div className="page-header">
@@ -55,7 +61,7 @@ export const MarketLivePage: React.FC = () => {
 
       {!loading && !error && data && (
         <>
-          {data.offers.length === 0 ? (
+          {activeOffers.length === 0 ? (
             <p className="empty-market-text">
               No hay ofertas activas en el exchange del mercado en este momento.
             </p>
@@ -74,10 +80,11 @@ export const MarketLivePage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {data.offers.map((offer, idx) => {
+              {activeOffers.map((offer, idx) => {
                   const isRouteDisabled = !offer.routeEnabled;
                   const rawId = offer.offerId || (offer as any).id || (offer as any).offer_id;
                   const displayId = typeof rawId === 'string' ? `${rawId.slice(0, 8)}...` : `oferta-${idx}`;
+                  const remaining = Number(offer.remainingEnergy ?? offer.remaining_energy ?? 0);
 
                   return (
                     <tr
@@ -94,7 +101,7 @@ export const MarketLivePage: React.FC = () => {
                         <code>{displayId}</code>
                       </td>
                       <td>
-                        <strong>{offer.remainingEnergy != null ? offer.remainingEnergy.toLocaleString() : '—'}</strong> kWh
+                        <strong>{remaining.toLocaleString()}</strong> kWh
                       </td>
                       <td>{offer.pricePerEnergy != null ? `${Number(offer.pricePerEnergy).toFixed(2)} cr/kWh` : '—'}</td>
                       <td>

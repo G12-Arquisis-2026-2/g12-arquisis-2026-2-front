@@ -1,0 +1,212 @@
+.live-feed-card {
+    background-color: #fdfbf7;
+    border: 2px solid #2b211c;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 3px 0 #2b211c;
+  }
+  
+  .live-feed-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .live-feed-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  
+  .live-feed-title {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #1e1612;
+  }
+  
+  .sse-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  
+  .dot-connected {
+    background-color: #16a34a;
+    box-shadow: 0 0 6px #16a34a;
+  }
+  
+  .dot-reconnecting {
+    background-color: #d97706;
+  }
+  
+  .dot-error {
+    background-color: #dc2626;
+  }
+  
+  .sse-status-label {
+    font-size: 0.8rem;
+    color: #6b5e56;
+    font-weight: 600;
+  }
+  
+  .live-feed-counter {
+    background-color: #e2e8f0;
+    color: #1e293b;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  
+  .live-feed-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  
+  .feed-filter-btn,
+  .feed-action-btn {
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+    color: #334155;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .feed-filter-btn.active {
+    background-color: #1e293b;
+    color: #ffffff;
+    border-color: #1e293b;
+  }
+  
+  .feed-action-btn {
+    background-color: #f1f5f9;
+  }
+  
+  .live-feed-warning {
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background-color: #fef3c7;
+    border: 1px solid #f59e0b;
+    color: #92400e;
+    border-radius: 6px;
+    font-size: 0.82rem;
+  }
+  
+  .live-feed-stream {
+    margin-top: 0.9rem;
+    max-height: 280px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding-right: 4px;
+  }
+  
+  .live-feed-empty {
+    text-align: center;
+    padding: 1.5rem;
+    color: #64748b;
+    font-size: 0.88rem;
+    font-style: italic;
+  }
+  
+  .feed-item {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left-width: 4px;
+    border-radius: 6px;
+    padding: 0.6rem 0.85rem;
+    font-size: 0.85rem;
+  }
+  
+  .feed-item-market {
+    border-left-color: #0284c7;
+  }
+  
+  .feed-item-wallet {
+    border-left-color: #16a34a;
+  }
+  
+  .feed-item-saga {
+    border-left-color: #7c3aed;
+  }
+  
+  .feed-item-alert {
+    border-left-color: #dc2626;
+    background-color: #fef2f2;
+  }
+  
+  .feed-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .feed-item-badges {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  
+  .feed-cat-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #ffffff;
+  }
+  
+  .badge-market {
+    background-color: #0284c7;
+  }
+  
+  .badge-wallet {
+    background-color: #16a34a;
+  }
+  
+  .badge-saga {
+    background-color: #7c3aed;
+  }
+  
+  .badge-alert {
+    background-color: #dc2626;
+  }
+  
+  .feed-event-type {
+    font-weight: 700;
+    color: #0f172a;
+  }
+  
+  .feed-seq-id {
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+  
+  .feed-timestamp {
+    font-size: 0.76rem;
+    color: #64748b;
+  }
+  
+  .feed-item-summary {
+    margin-top: 0.35rem;
+    color: #1e293b;
+    font-weight: 500;
+  }
+  
+  .feed-item-correlation {
+    margin-top: 0.35rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    font-size: 0.75rem;
+    color: #475569;
+  }

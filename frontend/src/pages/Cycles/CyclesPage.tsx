@@ -7,6 +7,20 @@ import './CyclesPage.css';
 
 const ITEMS_PER_PAGE = 5;
 
+function formatDateTime(isoString?: string | null): string {
+  if (!isoString) return '—';
+  const date = new Date(isoString);
+  if (Number.isNaN(date.getTime())) return '—';
+  return date.toLocaleString('es-CL', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+}
+
 export const CyclesPage: React.FC = () => {
   const [cycles, setCycles] = useState<CycleSummary[]>([]);
   const [currentCycle, setCurrentCycle] = useState<CycleSummary | null>(null);
@@ -87,8 +101,8 @@ export const CyclesPage: React.FC = () => {
               <div className="current-cycle-timer">
                 {currentCycle.statusStatement?.validUntil
                   ? (isCurrentExpired
-                      ? `Ciclo cerrado a las ${new Date(currentCycle.statusStatement.validUntil).toLocaleTimeString()}`
-                      : `Válido hasta: ${new Date(currentCycle.statusStatement.validUntil).toLocaleTimeString()}`)
+                      ? `Ciclo cerrado el ${formatDateTime(currentCycle.statusStatement.validUntil)}`
+                      : `Válido hasta: ${formatDateTime(currentCycle.statusStatement.validUntil)}`)
                   : 'Sin fecha de vigencia'}
               </div>
             </div>
@@ -136,15 +150,20 @@ export const CyclesPage: React.FC = () => {
                 <div>
                   <span className="cycle-id">Ciclo: {c.cycleId || '—'}</span>
                   <span className="badge-operation">Última Op: {c.lastOperation || '—'}</span>
+                  {c.statusStatement?.validUntil && (
+                    <span style={{ marginLeft: '0.75rem', fontSize: '0.82rem', color: '#64748b' }}>
+                      ({formatDateTime(c.statusStatement.validUntil)})
+                    </span>
+                  )}
                 </div>
 
                 <div className="cycle-header-summary">
                   <div>
                     <div className="summary-label">Balance Final (Energía / Budget)</div>
                     <div className="summary-values">
-                      {c.finalBalances?.energy != null ? `${c.finalBalances.energy.toLocaleString()} kWh` : '—'}
+                      {c.finalBalances?.energy != null ? `${Number(c.finalBalances.energy).toLocaleString()} kWh` : '—'}
                       {' | '}
-                      {c.finalBalances?.budget != null ? `${c.finalBalances.budget.toLocaleString()} créditos` : '—'}
+                      {c.finalBalances?.budget != null ? `${Number(c.finalBalances.budget).toLocaleString()} créditos` : '—'}
                     </div>
                   </div>
                   <span className="accordion-arrow">{isExpanded ? '▲' : '▼'}</span>
@@ -171,7 +190,9 @@ export const CyclesPage: React.FC = () => {
                           </p>
                           <p className="info-card-row"><strong>Costo Generación:</strong> {c.statusStatement.energy?.generationCost ?? '—'} créditos/kWh</p>
                           <small style={{ color: '#64748b' }}>
-                            {c.statusStatement.validUntil ? `Válido hasta: ${new Date(c.statusStatement.validUntil).toLocaleTimeString()}` : 'Sin expiración'}
+                          {c.statusStatement.validUntil
+                            ? `Válido hasta: ${formatDateTime(c.statusStatement.validUntil)}`
+                            : 'Sin expiración'}
                           </small>
                         </>
                       ) : (
@@ -226,32 +247,38 @@ export const CyclesPage: React.FC = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {c.bidsSent?.map((bid, i) => (
-                            <tr key={`sent-${i}`}>
-                              <td><strong>ENVIADO (Compra)</strong></td>
-                              <td>{bid.sourceCityId} → {bid.targetCityId}</td>
-                              <td>{bid.quantity.toLocaleString()} kWh</td>
-                              <td>
-                                <span className={`status-badge ${bid.status === 'bid-accepted' ? 'badge-paid' : 'badge-timeout'}`}>
-                                  {bid.status}
-                                </span>
-                              </td>
-                              <td>{bid.rejectionReason || '—'}</td>
-                            </tr>
-                          ))}
-                          {c.bidsReceived?.map((bid, i) => (
-                            <tr key={`rec-${i}`}>
-                              <td><strong>RECIBIDO (Venta)</strong></td>
-                              <td>{bid.sourceCityId} → {bid.targetCityId}</td>
-                              <td>{bid.quantity.toLocaleString()} kWh</td>
-                              <td>
-                                <span className={`status-badge ${bid.status === 'bid-accepted' ? 'badge-paid' : 'badge-timeout'}`}>
-                                  {bid.status}
-                                </span>
-                              </td>
-                              <td>{bid.rejectionReason || '—'}</td>
-                            </tr>
-                          ))}
+                          {c.bidsSent?.map((bid, i) => {
+                            const reason = bid.rejectionReason ?? bid.rejection_reason ?? bid.statusReason ?? bid.status_reason;
+                            return (
+                              <tr key={`sent-${i}`}>
+                                <td><strong>ENVIADO (Compra)</strong></td>
+                                <td>{bid.sourceCityId} → {bid.targetCityId}</td>
+                                <td>{Number(bid.quantity ?? 0).toLocaleString()} kWh</td>
+                                <td>
+                                  <span className={`status-badge ${bid.status === 'bid-accepted' ? 'badge-paid' : 'badge-timeout'}`}>
+                                    {bid.status}
+                                  </span>
+                                </td>
+                                <td>{reason || '—'}</td>
+                              </tr>
+                            );
+                          })}
+                          {c.bidsReceived?.map((bid, i) => {
+                            const reason = bid.rejectionReason ?? bid.rejection_reason ?? bid.statusReason ?? bid.status_reason;
+                            return (
+                              <tr key={`rec-${i}`}>
+                                <td><strong>RECIBIDO (Venta)</strong></td>
+                                <td>{bid.sourceCityId} → {bid.targetCityId}</td>
+                                <td>{Number(bid.quantity ?? 0).toLocaleString()} kWh</td>
+                                <td>
+                                  <span className={`status-badge ${bid.status === 'bid-accepted' ? 'badge-paid' : 'badge-timeout'}`}>
+                                    {bid.status}
+                                  </span>
+                                </td>
+                                <td>{reason || '—'}</td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     )}
@@ -275,20 +302,32 @@ export const CyclesPage: React.FC = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {c.swaps.map((s, idx) => (
-                            <tr key={idx}>
-                              <td><code>{s.swapId.slice(0, 8)}...</code></td>
-                              <td><strong>{s.counterpartCityId}</strong></td>
-                              <td>{s.giveQuantity.toLocaleString()} {s.giveUnit}</td>
-                              <td>{s.takeQuantity.toLocaleString()} {s.takeUnit}</td>
-                              <td>{s.tokenVerified ? '✅ Sí' : '❌ No'}</td>
-                              <td>
-                                <span className={`status-badge ${s.status === 'settled' ? 'badge-paid' : 'badge-timeout'}`}>
-                                  {s.status.toUpperCase()}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
+                          {c.swaps.map((s, idx) => {
+                            const isTokenVerified = Boolean(
+                              s.tokenVerified ?? s.token_verified ?? s.status === 'settled'
+                            );
+                            const swapReason = s.statusReason ?? s.status_reason;
+
+                            return (
+                              <tr key={s.swapId || idx}>
+                                <td><code>{s.swapId ? `${s.swapId.slice(0, 8)}...` : '—'}</code></td>
+                                <td><strong>{s.counterpartCityId}</strong></td>
+                                <td>{Number(s.giveQuantity ?? 0).toLocaleString()} {s.giveUnit}</td>
+                                <td>{Number(s.takeQuantity ?? 0).toLocaleString()} {s.takeUnit}</td>
+                                <td>{isTokenVerified ? '✅ Sí' : '❌ No'}</td>
+                                <td>
+                                  <span className={`status-badge ${s.status === 'settled' ? 'badge-paid' : 'badge-timeout'}`}>
+                                    {s.status.toUpperCase()}
+                                  </span>
+                                  {swapReason && (
+                                    <div style={{ fontSize: '0.75rem', color: '#991b1b', marginTop: '3px' }}>
+                                      {swapReason}
+                                    </div>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     )}
@@ -369,7 +408,7 @@ export const CyclesPage: React.FC = () => {
                             <>
                               <p className="page-subtitle">Reportado sin multas a la central.</p>
                               <small style={{ color: '#166534' }}>
-                                Emitido a las: {new Date(c.negotiationReport.sentAt).toLocaleTimeString()}
+                                Emitido el: {formatDateTime(c.negotiationReport.sentAt)}
                               </small>
                             </>
                           ) : (
@@ -381,9 +420,9 @@ export const CyclesPage: React.FC = () => {
                         <div style={{ textAlign: 'right' }}>
                           <div className="summary-label">Balances Declarados:</div>
                           <div className="final-report-declared">
-                            {c.negotiationReport.budgetBalance != null ? `${c.negotiationReport.budgetBalance.toLocaleString()} créditos` : '—'}
+                            {c.negotiationReport.budgetBalance != null ? `${Number(c.negotiationReport.budgetBalance).toLocaleString()} créditos` : '—'}
                             {' | '}
-                            {c.negotiationReport.energyBalance != null ? `${c.negotiationReport.energyBalance.toLocaleString()} kWh` : '—'}
+                            {c.negotiationReport.energyBalance != null ? `${Number(c.negotiationReport.energyBalance).toLocaleString()} kWh` : '—'}
                           </div>
                         </div>
                       </>
